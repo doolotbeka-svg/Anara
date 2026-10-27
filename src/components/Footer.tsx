@@ -120,7 +120,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenBooking, onOpenTzModal }) 
         {/* Bottom line */}
         <div className="pt-8 border-t border-[#2A3E31] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#799983]">
           <div>
-            © {new Date().getFullYear()}{' '}{t('footer.18', 'Массаж на дому у мастера в Бежецке. Анара Муратова.')}
+            © {new Date().getFullYear()}{' '}{t('footer.18', 'Массаж на дому у мастера в Бежецке. Муратова Анара.')}
           </div>
           <div className="text-[11px] text-center sm:text-right">
             {t('footer.19', 'Не является публичной офертой. Имеются противопоказания, необходима консультация специалиста.')}

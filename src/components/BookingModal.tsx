@@ -115,7 +115,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
               {t('booking.1', 'Заявка успешно подготовлена!')}
             </h3>
             <p className="text-sm text-[#4E6053] max-w-md mx-auto leading-relaxed">
-              {t('booking.2', 'Мастер Анара Муратова свяжется с вами в течение 10–15 минут для подтверждения точного времени по адресу:')}{' '}{MASTER_INFO.cabinetAddress}{t('booking.3', '. Если вы открыли WhatsApp — просто отправьте подготовленный текст. Для Telegram текст заявки скопирован — вставьте его в чат.')}
+              {t('booking.2', 'Мастер Муратова Анара свяжется с вами в течение 10–15 минут для подтверждения точного времени по адресу:')}{' '}{MASTER_INFO.cabinetAddress}{t('booking.3', '. Если вы открыли WhatsApp — просто отправьте подготовленный текст. Для Telegram текст заявки скопирован — вставьте его в чат.')}
             </p>
             <div className="pt-4">
               <button

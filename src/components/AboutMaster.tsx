@@ -21,7 +21,7 @@ export const AboutMaster: React.FC = () => {
             {t('about.2', '«Моя цель — избавить вас от боли и спазмов в обстановке полного покоя, душевного тепла и уюта»')}
           </h2>
           <p className="mt-4 text-base text-[#4A594F] leading-relaxed">
-            {t('about.3', 'Здравствуйте! Меня зовут Анара Муратова. Я дипломированный специалист по медицинскому и оздоровительному массажу со стажем 2 года. Принимаю клиентов в оборудованном домашнем кабинете в Бежецке на ул. Мира 2/50.')}
+            {t('about.3', 'Здравствуйте! Меня зовут Муратова Анара. Я дипломированный специалист по медицинскому и оздоровительному массажу со стажем 2 года. Принимаю клиентов в оборудованном домашнем кабинете в Бежецке на ул. Мира 2/50.')}
           </p>
         </div>
 
@@ -35,7 +35,7 @@ export const AboutMaster: React.FC = () => {
               <div className="flex items-center gap-4">
                 <MasterAvatar
                   className="w-16 h-16 rounded-full bg-[#3F5B49] text-white font-display font-bold text-2xl shadow-inner shrink-0"
-                  initials={t('about.4', 'АМ')}
+                  initials={t('about.4', 'МА')}
                 />
                 <div>
                   <h3 className="text-xl font-display font-bold text-[#1B2F22]">

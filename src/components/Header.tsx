@@ -30,7 +30,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBooking, onOpenTzModal }) 
           <a href="#" className="flex items-center gap-2.5 group whitespace-nowrap shrink-0">
             <MasterAvatar
               className="w-10 h-10 rounded-full bg-[#466352] text-white font-display font-bold text-base shadow-xs"
-              initials={t('header.7', 'АМ')}
+              initials={t('header.7', 'МА')}
             />
             <div className="flex flex-col">
               <span className="font-display text-xl sm:text-2xl font-bold tracking-tight text-[#1D3325]">
@@ -103,7 +103,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBooking, onOpenTzModal }) 
           {/* Master card in mobile menu */}
           <div className="p-3 rounded-xl bg-[#F0EBE1] border border-[#DDD5C7] space-y-1">
             <div className="font-display font-bold text-sm text-[#182B1F]">
-              {t('header.11', 'Анара Муратова · Массаж на дому')}
+              {t('header.11', 'Муратова Анара · Массаж на дому')}
             </div>
             <div className="text-xs text-[#526457] flex items-center gap-1">
               <MapPin className="w-3.5 h-3.5 text-[#466352]" />
