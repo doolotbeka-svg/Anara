@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { CheckCircle, ExternalLink, History, Loader2, LockKeyhole, LogOut, Save } from 'lucide-react';
 import { DataKey, DEFAULT_DATA, emptyContent, resolveData, SiteContent } from '../content/merge';
-import { adminApi, errorText, getSavedPassword, HistoryVersion, savePassword, UnauthorizedError } from './api';
+import { adminApi, errorText, getSavedToken, HistoryVersion, LockedError, saveToken, UnauthorizedError } from './api';
 import { TextsEditor } from './TextsEditor';
 import { DataEditor } from './DataEditor';
 import { PhotosEditor } from './PhotosEditor';
@@ -27,7 +27,12 @@ const TABS: { id: Tab; label: string }[] = [
 const formatDate = (iso: string) =>
   new Date(iso).toLocaleString('ru-RU', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
 
-const LoginScreen: React.FC<{ onLogin: (password: string) => void }> = ({ onLogin }) => {
+const lockedText = (seconds: number) => {
+  const minutes = Math.ceil(seconds / 60);
+  return `Слишком много неверных попыток. Вход закрыт, попробуйте через ${minutes} мин.`;
+};
+
+const LoginScreen: React.FC<{ onLogin: (token: string) => void; sessionExpired: boolean }> = ({ onLogin, sessionExpired }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -37,10 +42,16 @@ const LoginScreen: React.FC<{ onLogin: (password: string) => void }> = ({ onLogi
     setLoading(true);
     setError(null);
     try {
-      await adminApi.login(password);
-      onLogin(password);
+      const { token } = await adminApi.login(password);
+      onLogin(token);
     } catch (err) {
-      setError(err instanceof UnauthorizedError ? 'Неверный пароль.' : errorText(err));
+      setError(
+        err instanceof UnauthorizedError
+          ? 'Неверный пароль. После 5 неверных попыток вход закрывается на 15 минут.'
+          : err instanceof LockedError
+            ? lockedText(err.retryAfter)
+            : errorText(err)
+      );
     } finally {
       setLoading(false);
     }
@@ -54,7 +65,11 @@ const LoginScreen: React.FC<{ onLogin: (password: string) => void }> = ({ onLogi
         </div>
         <div>
           <h1 className="text-2xl font-display font-bold text-[#182B1F]">Админ-панель</h1>
-          <p className="text-xs text-[#5C6E61] mt-1">Введите пароль, чтобы менять тексты и фото сайта.</p>
+          <p className="text-xs text-[#5C6E61] mt-1">
+            {sessionExpired
+              ? 'Сессия закончилась. Войдите снова — несохранённые изменения не пропадут.'
+              : 'Введите пароль, чтобы менять тексты и фото сайта.'}
+          </p>
         </div>
         <input
           type="password"
@@ -83,21 +98,21 @@ const LoginScreen: React.FC<{ onLogin: (password: string) => void }> = ({ onLogi
 };
 
 const HistoryTab: React.FC<{
-  password: string;
+  token: string;
   isDirty: boolean;
   onRestored: (content: SiteContent) => void;
   onUnauthorized: () => void;
-}> = ({ password, isDirty, onRestored, onUnauthorized }) => {
+}> = ({ token, isDirty, onRestored, onUnauthorized }) => {
   const [versions, setVersions] = useState<HistoryVersion[] | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(() => {
     adminApi
-      .getHistory(password)
+      .getHistory(token)
       .then(setVersions)
       .catch((e) => (e instanceof UnauthorizedError ? onUnauthorized() : setError(errorText(e))));
-  }, [password, onUnauthorized]);
+  }, [token, onUnauthorized]);
 
   useEffect(load, [load]);
 
@@ -107,7 +122,7 @@ const HistoryTab: React.FC<{
     setBusy(version.pathname);
     setError(null);
     try {
-      onRestored(await adminApi.restore(password, version.pathname));
+      onRestored(await adminApi.restore(token, version.pathname));
       load();
     } catch (e) {
       if (e instanceof UnauthorizedError) onUnauthorized();
@@ -149,41 +164,47 @@ const HistoryTab: React.FC<{
 };
 
 export const AdminPanel: React.FC = () => {
-  const [password, setPassword] = useState(getSavedPassword);
+  const [token, setToken] = useState(getSavedToken);
   const [content, setContent] = useState<SiteContent | null>(null);
   const [savedJson, setSavedJson] = useState('');
   const [tab, setTab] = useState<Tab>('texts');
   const [status, setStatus] = useState<{ type: 'saving' | 'saved' | 'error'; text?: string } | null>(null);
 
-  const logout = useCallback(() => {
-    savePassword(null);
-    setPassword('');
-    setContent(null);
+  // Session expired: ask for the password again but keep the edits in memory
+  const endSession = useCallback(() => {
+    saveToken(null);
+    setToken('');
   }, []);
 
+  const logout = useCallback(() => {
+    endSession();
+    setContent(null);
+  }, [endSession]);
+
   const loadContent = useCallback(
-    (pwd: string) => {
+    (sessionToken: string) => {
       adminApi
-        .getContent(pwd)
+        .getContent(sessionToken)
         .then((c) => {
           setContent(c);
           setSavedJson(JSON.stringify(c));
         })
         .catch((e) => {
-          if (e instanceof UnauthorizedError) logout();
+          if (e instanceof UnauthorizedError) endSession();
           else {
             setContent(emptyContent());
             setStatus({ type: 'error', text: errorText(e) });
           }
         });
     },
-    [logout]
+    [endSession]
   );
 
   useEffect(() => {
     document.title = 'Админ-панель';
-    if (password) loadContent(password);
-  }, [password, loadContent]);
+    // After a re-login the edits in memory are kept, not reloaded
+    if (token && content === null) loadContent(token);
+  }, [token, loadContent]);
 
   const isDirty = content !== null && JSON.stringify(content) !== savedJson;
 
@@ -196,12 +217,13 @@ export const AdminPanel: React.FC = () => {
 
   const resolved = useMemo(() => (content ? resolveData(content.data) : null), [content]);
 
-  if (!password) {
+  if (!token) {
     return (
       <LoginScreen
-        onLogin={(pwd) => {
-          savePassword(pwd);
-          setPassword(pwd);
+        sessionExpired={content !== null}
+        onLogin={(newToken) => {
+          saveToken(newToken);
+          setToken(newToken);
         }}
       />
     );
@@ -223,13 +245,15 @@ export const AdminPanel: React.FC = () => {
   const save = async () => {
     setStatus({ type: 'saving' });
     try {
-      const saved = await adminApi.saveContent(password, content);
+      const saved = await adminApi.saveContent(token, content);
       setContent(saved);
       setSavedJson(JSON.stringify(saved));
       setStatus({ type: 'saved' });
     } catch (e) {
-      if (e instanceof UnauthorizedError) logout();
-      else setStatus({ type: 'error', text: errorText(e) });
+      if (e instanceof UnauthorizedError) {
+        setStatus(null);
+        endSession();
+      } else setStatus({ type: 'error', text: errorText(e) });
     }
   };
 
@@ -318,9 +342,9 @@ export const AdminPanel: React.FC = () => {
         {tab === 'photos' && (
           <PhotosEditor
             images={content.images}
-            password={password}
+            token={token}
             onChange={(images) => update({ images })}
-            onUnauthorized={logout}
+            onUnauthorized={endSession}
           />
         )}
 
@@ -348,9 +372,9 @@ export const AdminPanel: React.FC = () => {
 
         {tab === 'history' && (
           <HistoryTab
-            password={password}
+            token={token}
             isDirty={isDirty}
-            onUnauthorized={logout}
+            onUnauthorized={endSession}
             onRestored={(restored) => {
               setContent(restored);
               setSavedJson(JSON.stringify(restored));

@@ -3,7 +3,7 @@ import { json, requireAdmin } from '../_lib/http.js';
 
 /** Saved versions, newest first. */
 export async function GET(request: Request): Promise<Response> {
-  const denied = await requireAdmin(request);
+  const denied = requireAdmin(request);
   if (denied) return denied;
   try {
     const versions = await listHistory();
@@ -16,7 +16,7 @@ export async function GET(request: Request): Promise<Response> {
 
 /** Restores a saved version: it becomes the current content (and a new version itself). */
 export async function POST(request: Request): Promise<Response> {
-  const denied = await requireAdmin(request);
+  const denied = requireAdmin(request);
   if (denied) return denied;
 
   let pathname: unknown;

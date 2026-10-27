@@ -27,7 +27,7 @@ async function resizeImage(file: File): Promise<Blob> {
 
 interface PhotosEditorProps {
   images: SiteImages;
-  password: string;
+  token: string;
   onChange: (images: SiteImages) => void;
   onUnauthorized: () => void;
 }
@@ -93,7 +93,7 @@ const PhotoSlot: React.FC<{
   );
 };
 
-export const PhotosEditor: React.FC<PhotosEditorProps> = ({ images, password, onChange, onUnauthorized }) => {
+export const PhotosEditor: React.FC<PhotosEditorProps> = ({ images, token, onChange, onUnauthorized }) => {
   const [busySlot, setBusySlot] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
@@ -104,7 +104,7 @@ export const PhotosEditor: React.FC<PhotosEditorProps> = ({ images, password, on
     try {
       const urls: string[] = [];
       for (const file of files) {
-        const { url } = await adminApi.uploadImage(password, await resizeImage(file));
+        const { url } = await adminApi.uploadImage(token, await resizeImage(file));
         urls.push(url);
       }
       return urls;

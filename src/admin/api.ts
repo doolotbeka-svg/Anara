@@ -1,33 +1,41 @@
 import { SiteContent } from '../content/merge';
 
-const PASSWORD_KEY = 'anara-admin-password';
+const TOKEN_KEY = 'anara-admin-session';
 
-export const getSavedPassword = (): string => {
+export const getSavedToken = (): string => {
   try {
-    return sessionStorage.getItem(PASSWORD_KEY) ?? '';
+    return sessionStorage.getItem(TOKEN_KEY) ?? '';
   } catch {
     return '';
   }
 };
 
-export const savePassword = (password: string | null) => {
+export const saveToken = (token: string | null) => {
   try {
-    if (password) sessionStorage.setItem(PASSWORD_KEY, password);
-    else sessionStorage.removeItem(PASSWORD_KEY);
+    if (token) sessionStorage.setItem(TOKEN_KEY, token);
+    else sessionStorage.removeItem(TOKEN_KEY);
   } catch {
-    // sessionStorage unavailable: the password just won't survive a reload
+    // sessionStorage unavailable: the session just won't survive a reload
   }
 };
 
 export class UnauthorizedError extends Error {}
 
-async function request<T>(password: string, path: string, init: RequestInit = {}): Promise<T> {
+/** Too many wrong passwords: login is closed for retryAfter seconds. */
+export class LockedError extends Error {
+  constructor(public retryAfter: number) {
+    super('locked');
+  }
+}
+
+async function request<T>(token: string, path: string, init: RequestInit = {}): Promise<T> {
   const res = await fetch(path, {
     ...init,
-    headers: { 'x-admin-password': encodeURIComponent(password), ...init.headers },
+    headers: { Authorization: `Bearer ${token}`, ...init.headers },
   });
   if (res.status === 401) throw new UnauthorizedError();
   const data = await res.json().catch(() => ({}));
+  if (res.status === 429) throw new LockedError(Number(data.retryAfter) || 60);
   if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
   return data as T;
 }
@@ -39,23 +47,28 @@ export interface HistoryVersion {
 }
 
 export const adminApi = {
-  login: (password: string) => request<{ ok: true }>(password, '/api/admin/login', { method: 'POST' }),
-  getContent: (password: string) => request<SiteContent>(password, '/api/admin/content'),
-  saveContent: (password: string, content: SiteContent) =>
-    request<SiteContent>(password, '/api/admin/content', {
+  login: (password: string) =>
+    request<{ token: string; expiresAt: string }>('', '/api/admin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password }),
+    }),
+  getContent: (token: string) => request<SiteContent>(token, '/api/admin/content'),
+  saveContent: (token: string, content: SiteContent) =>
+    request<SiteContent>(token, '/api/admin/content', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(content),
     }),
-  getHistory: (password: string) => request<HistoryVersion[]>(password, '/api/admin/history'),
-  restore: (password: string, pathname: string) =>
-    request<SiteContent>(password, '/api/admin/history', {
+  getHistory: (token: string) => request<HistoryVersion[]>(token, '/api/admin/history'),
+  restore: (token: string, pathname: string) =>
+    request<SiteContent>(token, '/api/admin/history', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ pathname }),
     }),
-  uploadImage: (password: string, file: Blob) =>
-    request<{ url: string }>(password, '/api/admin/upload', {
+  uploadImage: (token: string, file: Blob) =>
+    request<{ url: string }>(token, '/api/admin/upload', {
       method: 'POST',
       headers: { 'Content-Type': file.type },
       body: file,
