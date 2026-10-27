@@ -16,6 +16,7 @@ import { CoverageMap } from './components/CoverageMap';
 import { Footer } from './components/Footer';
 import { BookingModal } from './components/BookingModal';
 import { TechnicalSpecModal } from './components/TechnicalSpecModal';
+import { ChatWidget } from './components/ChatWidget';
 import { MassageService } from './types';
 import { MessageCircle, Phone, Sparkles, FileText } from 'lucide-react';
 import { MASTER_INFO } from './data/massageData';
@@ -106,6 +107,9 @@ export default function App() {
         isOpen={isTzOpen}
         onClose={() => setIsTzOpen(false)}
       />
+
+      {/* AI assistant chat (answers via /api/chat) */}
+      <ChatWidget />
 
       {/* Mobile Sticky Action Bar (Strictly capped < 15% mobile viewport height) */}
       <div className="sm:hidden fixed bottom-0 left-0 right-0 z-30 bg-[#FAF8F5]/95 backdrop-blur-md border-t border-[#DFD7CC] p-2.5 px-4 flex items-center justify-between gap-2 shadow-lg">

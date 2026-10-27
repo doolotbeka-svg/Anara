@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin, Navigation, Clock, Check, Car, Bus, ShieldCheck, Coffee } from 'lucide-react';
+import { MapPin, Navigation, Car, Bus, ShieldCheck, Coffee, ExternalLink } from 'lucide-react';
 import { LOCATION_BEZHETSK, MASTER_INFO } from '../data/massageData';
 
 export const CoverageMap: React.FC = () => {
@@ -11,6 +11,10 @@ export const CoverageMap: React.FC = () => {
     { from: 'Район ж/д Вокзала', time: '8–12 мин на авто' },
     { from: 'Заречье (за р. Молога / Остречина)', time: '10–14 мин на авто' },
   ];
+
+  const mapQuery = encodeURIComponent(LOCATION_BEZHETSK.mapQuery);
+  const mapEmbedUrl = `https://yandex.ru/map-widget/v1/?mode=search&text=${mapQuery}&z=16`;
+  const mapOpenUrl = `https://yandex.ru/maps/?mode=search&text=${mapQuery}&z=17`;
 
   return (
     <section id="location" className="py-16 lg:py-20 bg-[#F4EFEA] border-t border-[#E5DED4]">
@@ -68,7 +72,7 @@ export const CoverageMap: React.FC = () => {
             </div>
 
             <div className="p-3.5 rounded-xl bg-[#FAF8F5] border border-[#E9E2D8] text-xs text-[#5E7164]">
-              * Точный номер дома и подъезда высылается личным сообщением в WhatsApp или Telegram сразу после согласования даты и времени сеанса.
+              * Номер подъезда и этаж высылаются личным сообщением в WhatsApp или Telegram сразу после согласования даты и времени сеанса.
             </div>
           </div>
 
@@ -106,6 +110,32 @@ export const CoverageMap: React.FC = () => {
             </div>
           </div>
 
+        </div>
+
+        {/* Map with the cabinet address pin */}
+        <div className="mt-10 rounded-2xl overflow-hidden border border-[#DFD7CD] bg-white shadow-sm">
+          <iframe
+            src={mapEmbedUrl}
+            title={`Карта: ${LOCATION_BEZHETSK.address}`}
+            className="block w-full h-[320px] sm:h-[420px] border-0"
+            loading="lazy"
+            allowFullScreen
+          />
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 px-4 py-3 text-xs text-[#4F6154]">
+            <span className="flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-[#466352] shrink-0" />
+              <span>{LOCATION_BEZHETSK.address}</span>
+            </span>
+            <a
+              href={mapOpenUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 font-semibold text-[#182B1F] hover:text-[#466352] transition-colors"
+            >
+              Открыть в Яндекс Картах и построить маршрут
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          </div>
         </div>
 
       </div>
