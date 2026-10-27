@@ -9,7 +9,7 @@ interface FooterProps {
 
 export const Footer: React.FC<FooterProps> = ({ onOpenBooking, onOpenTzModal }) => {
   return (
-    <footer className="bg-[#1C2C21] text-[#E4EDE7] border-t border-[#2A3E31] pt-14 pb-12">
+    <footer className="bg-[#1C2C21] text-[#E4EDE7] border-t border-[#2A3E31] pt-14 pb-24 sm:pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 mb-12">
           
