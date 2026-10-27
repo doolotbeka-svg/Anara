@@ -100,7 +100,7 @@ export default function App() {
           <>
             <Breadcrumbs page={page} />
             {pageContent[page.id]}
-            <PageFooter page={page} onOpenBooking={() => handleOpenBooking()} />
+            <PageFooter onOpenBooking={() => handleOpenBooking()} />
           </>
         ) : (
           // Unknown address

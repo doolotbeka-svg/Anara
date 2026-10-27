@@ -25,11 +25,11 @@ export const Breadcrumbs: React.FC<{ page: PageInfo }> = ({ page }) => (
 );
 
 /** Cards linking to the site's pages. */
-export const PageLinks: React.FC<{ exclude?: string; title: string }> = ({ exclude, title }) => (
+export const PageLinks: React.FC<{ title: string }> = ({ title }) => (
   <div className="space-y-4">
     <h2 className="text-2xl sm:text-3xl font-display font-bold text-[#182B1F]">{title}</h2>
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-      {PAGES.filter((p) => p.id !== exclude).map((p) => (
+      {PAGES.map((p) => (
         <Link
           key={p.id}
           to={p.path}
@@ -46,10 +46,10 @@ export const PageLinks: React.FC<{ exclude?: string; title: string }> = ({ exclu
   </div>
 );
 
-/** Bottom of every inner page: booking call to action and the other pages. */
-export const PageFooter: React.FC<{ page: PageInfo; onOpenBooking: () => void }> = ({ page, onOpenBooking }) => (
+/** Bottom of every inner page: booking call to action (the menu already links the other pages). */
+export const PageFooter: React.FC<{ onOpenBooking: () => void }> = ({ onOpenBooking }) => (
   <section className="py-14 bg-[#F2EDE5] border-t border-[#E5DDD0]">
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="p-6 sm:p-8 rounded-3xl bg-[#1D3325] text-white flex flex-col md:flex-row md:items-center justify-between gap-5">
         <div>
           <h2 className="text-2xl font-display font-bold">{t('nav.3', 'Готовы записаться на сеанс?')}</h2>
@@ -77,7 +77,6 @@ export const PageFooter: React.FC<{ page: PageInfo; onOpenBooking: () => void }>
           </a>
         </div>
       </div>
-      <PageLinks exclude={page.id} title={t('nav.7', 'Другие разделы')} />
     </div>
   </section>
 );
