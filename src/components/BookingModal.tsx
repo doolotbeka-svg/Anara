@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Sparkles, MessageCircle, Send, Phone, CheckCircle, Calendar, Clock, MapPin } from 'lucide-react';
-import { SERVICES, MASTER_INFO, LOCATION_BEZHETSK } from '../data/massageData';
+import { SERVICES, MASTER_INFO } from '../data/massageData';
 import { MassageService } from '../types';
 
 interface BookingModalProps {
@@ -25,6 +25,10 @@ export const BookingModal: React.FC<BookingModalProps> = ({
   const [selectedDurationIndex, setSelectedDurationIndex] = useState<number>(0);
 
   useEffect(() => {
+    if (!isOpen) return;
+    // Each opening starts a fresh request instead of showing the previous "success" screen
+    setIsSubmitted(false);
+    setPhoneError(false);
     if (preselectedService) {
       setSelectedServiceId(preselectedService.id);
       if (preselectedDuration) {
@@ -33,6 +37,9 @@ export const BookingModal: React.FC<BookingModalProps> = ({
       } else {
         setSelectedDurationIndex(0);
       }
+    } else {
+      setSelectedServiceId(SERVICES[0].id);
+      setSelectedDurationIndex(0);
     }
   }, [preselectedService, preselectedDuration, isOpen]);
 
@@ -44,6 +51,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
   const [timePreference, setTimePreference] = useState('Утро (09:00 - 12:00)');
   const [comment, setComment] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [phoneError, setPhoneError] = useState(false);
 
   if (!isOpen) return null;
 
@@ -51,7 +59,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
     return `Здравствуйте, Анара! Хочу записаться на массаж в ваш домашний кабинет в Бежецке:\n` +
       `• Программа: ${currentService.title}\n` +
       `• Длительность: ${currentDuration.minutes} мин (стоимость ${currentDuration.price} ₽)\n` +
-      `• Адрес кабинета: г. Бежецк, ул. Мира, д. 2/50\n` +
+      `• Адрес кабинета: ${MASTER_INFO.cabinetAddress}\n` +
       `• Желаемая дата/время: ${date || 'Ближайшая'} (${timePreference})\n` +
       `• Клиент: ${clientName || 'Не указано'}, тел: ${phone || 'В чате'}` +
       (comment ? `\n• Примечание: ${comment}` : '');
@@ -63,15 +71,24 @@ export const BookingModal: React.FC<BookingModalProps> = ({
     setIsSubmitted(true);
   };
 
-  const handleOpenTelegram = () => {
-    const text = encodeURIComponent(buildMessageText());
-    window.open(`${MASTER_INFO.telegramUrl}?start=${text}`, '_blank');
+  const handleOpenTelegram = async () => {
+    // t.me profile links can't prefill a message (?start= only works for bots and
+    // only with short latin payloads), so copy the text for the client to paste.
+    try {
+      await navigator.clipboard.writeText(buildMessageText());
+    } catch {
+      // Clipboard may be unavailable; the client can still type the message
+    }
+    window.open(MASTER_INFO.telegramUrl, '_blank');
     setIsSubmitted(true);
   };
 
   const handlePhoneSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!phone) return;
+    if (phone.replace(/\D/g, '').length < 10) {
+      setPhoneError(true);
+      return;
+    }
     setIsSubmitted(true);
   };
 
@@ -97,7 +114,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
               Заявка успешно подготовлена!
             </h3>
             <p className="text-sm text-[#4E6053] max-w-md mx-auto leading-relaxed">
-              Мастер Анара Муратова свяжется с вами в течение 10–15 минут для подтверждения точного времени по адресу: ул. Мира, д. 2/50. Если вы открыли мессенджер — просто отправьте подготовленный текст.
+              Мастер Анара Муратова свяжется с вами в течение 10–15 минут для подтверждения точного времени по адресу: {MASTER_INFO.cabinetAddress}. Если вы открыли WhatsApp — просто отправьте подготовленный текст. Для Telegram текст заявки скопирован — вставьте его в чат.
             </p>
             <div className="pt-4">
               <button
@@ -121,7 +138,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
               </h3>
               <p className="text-xs text-[#5C6E61] mt-1 flex items-center gap-1.5">
                 <MapPin className="w-3.5 h-3.5 text-[#466352]" />
-                <span>Прием по адресу: Бежецк, ул. Мира, д. 2/50 (удобная парковка)</span>
+                <span>Прием по адресу: {MASTER_INFO.cabinetAddress} (удобная парковка)</span>
               </p>
             </div>
 
@@ -193,9 +210,17 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                     type="tel"
                     placeholder="+7 (9xx) xxx-xx-xx"
                     value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className="w-full text-xs p-2.5 rounded-xl border border-[#D5CDC2] focus:outline-hidden focus:ring-2 focus:ring-[#466352]"
+                    onChange={(e) => {
+                      setPhone(e.target.value);
+                      setPhoneError(false);
+                    }}
+                    className={`w-full text-xs p-2.5 rounded-xl border focus:outline-hidden focus:ring-2 focus:ring-[#466352] ${
+                      phoneError ? 'border-red-400' : 'border-[#D5CDC2]'
+                    }`}
                   />
+                  {phoneError && (
+                    <p className="mt-1 text-[11px] text-red-600">Укажите номер телефона, чтобы мастер перезвонила</p>
+                  )}
                 </div>
               </div>
 
