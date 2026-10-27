@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Check, Loader2, MapPin, Star, Trash2 } from 'lucide-react';
 import { SiteContent } from '../content/merge';
 import { adminApi, errorText, PendingReview, UnauthorizedError } from './api';
+import { TelegramSettings } from './TelegramSettings';
 
 interface PendingReviewsProps {
   token: string;
@@ -44,6 +45,8 @@ export const PendingReviews: React.FC<PendingReviewsProps> = ({
 
   return (
     <div className="space-y-3">
+      <TelegramSettings token={token} onUnauthorized={onUnauthorized} />
+
       <p className="text-xs text-[#5C6E61]">
         Отзывы, которые клиенты оставили на сайте. На сайте они появятся только после того, как вы нажмёте «Опубликовать»
         — сверху списка отзывов. Потом их можно поправить на вкладке «Отзывы».

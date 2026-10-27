@@ -3,6 +3,7 @@ import { readContent } from './_lib/content.js';
 import { clientIp, json } from './_lib/http.js';
 import { reserveAttempt, reviewGlobalRule, reviewIpRule, TooManyRetriesError } from './_lib/lockout.js';
 import { parseReview, savePendingReview } from './_lib/reviews.js';
+import { notifyNewReview } from './_lib/telegram.js';
 
 // Public: the review form on the site. Reviews wait for moderation in the admin panel.
 export async function POST(request: Request): Promise<Response> {
@@ -29,5 +30,6 @@ export async function POST(request: Request): Promise<Response> {
     console.error('Failed to save review', error);
     return json({ error: 'storage_error' }, 503);
   }
+  await notifyNewReview(review, `${new URL(request.url).origin}/#admin`);
   return json({ ok: true });
 }
