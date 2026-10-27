@@ -249,7 +249,8 @@ export const AdminPanel: React.FC = () => {
   }
 
   const update = (patch: Partial<SiteContent>) => {
-    setContent({ ...content, ...patch });
+    // Functional update: async callers (photo uploads) may hold an older render's content
+    setContent((prev) => (prev ? { ...prev, ...patch } : prev));
     setStatus(null);
   };
 
@@ -362,6 +363,7 @@ export const AdminPanel: React.FC = () => {
         {tab === 'photos' && (
           <PhotosEditor
             images={content.images}
+            services={resolved.services}
             token={token}
             onChange={(images) => update({ images })}
             onUnauthorized={endSession}

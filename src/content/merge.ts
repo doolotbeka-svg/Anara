@@ -33,6 +33,8 @@ export interface SiteImages {
   masterPhoto: string | null;
   heroPhoto: string | null;
   gallery: GalleryPhoto[];
+  /** Slides in each massage card, by service id */
+  servicePhotos: Record<string, GalleryPhoto[]>;
 }
 
 export interface SiteContent {
@@ -45,13 +47,20 @@ export interface SiteContent {
 export const emptyContent = (): SiteContent => ({
   texts: {},
   data: {},
-  images: { masterPhoto: null, heroPhoto: null, gallery: [] },
+  images: { masterPhoto: null, heroPhoto: null, gallery: [], servicePhotos: {} },
 });
 
 const isPlainObject = (v: unknown): v is Record<string, unknown> =>
   typeof v === 'object' && v !== null && !Array.isArray(v);
 
 const isImageUrl = (v: unknown): v is string => typeof v === 'string' && /^https:\/\//.test(v);
+
+const toPhotoList = (list: unknown): GalleryPhoto[] =>
+  Array.isArray(list)
+    ? list
+        .filter((p): p is Record<string, unknown> => isPlainObject(p) && isImageUrl(p.url))
+        .map((p) => ({ url: p.url as string, caption: typeof p.caption === 'string' ? p.caption : '' }))
+    : [];
 
 export function normalizeContent(raw: unknown): SiteContent {
   const content = emptyContent();
@@ -71,10 +80,12 @@ export function normalizeContent(raw: unknown): SiteContent {
     const images = raw.images;
     content.images.masterPhoto = isImageUrl(images.masterPhoto) ? images.masterPhoto : null;
     content.images.heroPhoto = isImageUrl(images.heroPhoto) ? images.heroPhoto : null;
-    if (Array.isArray(images.gallery)) {
-      content.images.gallery = images.gallery
-        .filter((p): p is Record<string, unknown> => isPlainObject(p) && isImageUrl(p.url))
-        .map((p) => ({ url: p.url as string, caption: typeof p.caption === 'string' ? p.caption : '' }));
+    content.images.gallery = toPhotoList(images.gallery);
+    if (isPlainObject(images.servicePhotos)) {
+      for (const [serviceId, list] of Object.entries(images.servicePhotos)) {
+        const photos = toPhotoList(list);
+        if (photos.length) content.images.servicePhotos[serviceId] = photos;
+      }
     }
   }
   if (typeof raw.updatedAt === 'string') content.updatedAt = raw.updatedAt;

@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, ImagePlus, Loader2, Trash2, Upload } from 'lucide-react';
-import { SiteImages } from '../content/merge';
+import { GalleryPhoto, SiteImages } from '../content/merge';
 import { adminApi, errorText, UnauthorizedError } from './api';
 
 const MAX_SIDE = 1600;
@@ -27,6 +27,7 @@ async function resizeImage(file: File): Promise<Blob> {
 
 interface PhotosEditorProps {
   images: SiteImages;
+  services: { id: string; title: string }[];
   token: string;
   onChange: (images: SiteImages) => void;
   onUnauthorized: () => void;
@@ -93,10 +94,101 @@ const PhotoSlot: React.FC<{
   );
 };
 
-export const PhotosEditor: React.FC<PhotosEditorProps> = ({ images, token, onChange, onUnauthorized }) => {
+/** A list of photos with captions: add several at once, reorder, remove. */
+const PhotoListBlock: React.FC<{
+  title: string;
+  hint: string;
+  emptyText: string;
+  photos: GalleryPhoto[];
+  busy: boolean;
+  onAdd: (files: FileList) => void;
+  onChange: (photos: GalleryPhoto[]) => void;
+}> = ({ title, hint, emptyText, photos, busy, onAdd, onChange }) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const move = (index: number, delta: number) => {
+    const next = [...photos];
+    [next[index], next[index + delta]] = [next[index + delta], next[index]];
+    onChange(next);
+  };
+
+  return (
+    <div className="p-4 rounded-2xl border border-[#E3DCD2] bg-white space-y-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div>
+          <h3 className="font-semibold text-sm text-[#182B1F]">{title}</h3>
+          <p className="text-xs text-[#5C6E61]">{hint}</p>
+        </div>
+        <button
+          type="button"
+          disabled={busy}
+          onClick={() => inputRef.current?.click()}
+          className="shrink-0 inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#466352] hover:bg-[#385142] text-white text-xs font-semibold disabled:opacity-50"
+        >
+          {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+          Добавить фото
+        </button>
+        <input
+          ref={inputRef}
+          type="file"
+          accept="image/*"
+          multiple
+          className="hidden"
+          onChange={(e) => {
+            if (e.target.files?.length) onAdd(e.target.files);
+            e.target.value = '';
+          }}
+        />
+      </div>
+
+      {photos.length === 0 ? (
+        <p className="text-xs text-[#738377]">{emptyText}</p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {photos.map((photo, index) => (
+            <div key={photo.url} className="rounded-xl border border-[#E3DCD2] overflow-hidden bg-[#FBFAF7]">
+              <img src={photo.url} alt="" className="w-full aspect-[4/3] object-cover" />
+              <div className="p-2 space-y-2">
+                <input
+                  type="text"
+                  value={photo.caption}
+                  placeholder="Подпись (необязательно)"
+                  onChange={(e) => onChange(photos.map((p, i) => (i === index ? { ...p, caption: e.target.value } : p)))}
+                  className="w-full text-xs p-2 rounded-lg border border-[#D5CDC2] bg-white focus:outline-hidden focus:ring-2 focus:ring-[#466352]"
+                />
+                <div className="flex items-center justify-between">
+                  <div className="flex gap-1">
+                    <button type="button" disabled={index === 0} onClick={() => move(index, -1)} className="p-1.5 rounded-md text-[#5C6E61] hover:bg-[#ECE6DC] disabled:opacity-30" aria-label="Левее">
+                      <ArrowLeft className="w-4 h-4" />
+                    </button>
+                    <button type="button" disabled={index === photos.length - 1} onClick={() => move(index, 1)} className="p-1.5 rounded-md text-[#5C6E61] hover:bg-[#ECE6DC] disabled:opacity-30" aria-label="Правее">
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => onChange(photos.filter((_, i) => i !== index))}
+                    className="inline-flex items-center gap-1 px-2 py-1.5 rounded-md text-xs font-semibold text-[#A34236] hover:bg-[#FBEAE7]"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    Убрать
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export const PhotosEditor: React.FC<PhotosEditorProps> = ({ images, services, token, onChange, onUnauthorized }) => {
   const [busySlot, setBusySlot] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const galleryInputRef = useRef<HTMLInputElement>(null);
+  // Uploads take seconds: when one finishes, apply it to the images as they are *then*,
+  // not as they were when the upload started (captions edited meanwhile must survive)
+  const latest = useRef(images);
+  latest.current = images;
 
   const upload = async (slot: string, files: File[]): Promise<string[]> => {
     setBusySlot(slot);
@@ -119,19 +211,26 @@ export const PhotosEditor: React.FC<PhotosEditorProps> = ({ images, token, onCha
 
   const setSingle = async (slot: 'masterPhoto' | 'heroPhoto', files: FileList) => {
     const [url] = await upload(slot, [files[0]]);
-    if (url) onChange({ ...images, [slot]: url });
+    if (url) onChange({ ...latest.current, [slot]: url });
   };
+
+  const toPhotos = (urls: string[]) => urls.map((url) => ({ url, caption: '' }));
 
   const addToGallery = async (files: FileList) => {
     const urls = await upload('gallery', Array.from(files));
-    if (urls.length) onChange({ ...images, gallery: [...images.gallery, ...urls.map((url) => ({ url, caption: '' }))] });
+    if (urls.length) onChange({ ...latest.current, gallery: [...latest.current.gallery, ...toPhotos(urls)] });
   };
 
-  const updateGallery = (gallery: SiteImages['gallery']) => onChange({ ...images, gallery });
-  const moveGallery = (index: number, delta: number) => {
-    const next = [...images.gallery];
-    [next[index], next[index + delta]] = [next[index + delta], next[index]];
-    updateGallery(next);
+  const setServicePhotos = (serviceId: string, photos: GalleryPhoto[]) => {
+    const servicePhotos = { ...latest.current.servicePhotos };
+    if (photos.length) servicePhotos[serviceId] = photos;
+    else delete servicePhotos[serviceId];
+    onChange({ ...latest.current, servicePhotos });
+  };
+
+  const addToService = async (serviceId: string, files: FileList) => {
+    const urls = await upload(`service:${serviceId}`, Array.from(files));
+    if (urls.length) setServicePhotos(serviceId, [...(latest.current.servicePhotos[serviceId] ?? []), ...toPhotos(urls)]);
   };
 
   return (
@@ -162,75 +261,32 @@ export const PhotosEditor: React.FC<PhotosEditorProps> = ({ images, token, onCha
         />
       </div>
 
-      <div className="p-4 rounded-2xl border border-[#E3DCD2] bg-white space-y-3">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div>
-            <h3 className="font-semibold text-sm text-[#182B1F]">Галерея кабинета</h3>
-            <p className="text-xs text-[#5C6E61]">Показывается под блоком «О мастере и кабинете». Можно выбрать сразу несколько фото.</p>
-          </div>
-          <button
-            type="button"
-            disabled={busySlot === 'gallery'}
-            onClick={() => galleryInputRef.current?.click()}
-            className="shrink-0 inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#466352] hover:bg-[#385142] text-white text-xs font-semibold disabled:opacity-50"
-          >
-            {busySlot === 'gallery' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
-            Добавить фото
-          </button>
-          <input
-            ref={galleryInputRef}
-            type="file"
-            accept="image/*"
-            multiple
-            className="hidden"
-            onChange={(e) => {
-              if (e.target.files?.length) addToGallery(e.target.files);
-              e.target.value = '';
-            }}
-          />
-        </div>
+      <PhotoListBlock
+        title="Галерея кабинета"
+        hint="Показывается под блоком «О мастере и кабинете». Можно выбрать сразу несколько фото."
+        emptyText="Пока нет фото — галерея на сайте скрыта."
+        photos={images.gallery}
+        busy={busySlot === 'gallery'}
+        onAdd={addToGallery}
+        onChange={(gallery) => onChange({ ...images, gallery })}
+      />
 
-        {images.gallery.length === 0 ? (
-          <p className="text-xs text-[#738377]">Пока нет фото — галерея на сайте скрыта.</p>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {images.gallery.map((photo, index) => (
-              <div key={photo.url} className="rounded-xl border border-[#E3DCD2] overflow-hidden bg-[#FBFAF7]">
-                <img src={photo.url} alt="" className="w-full aspect-[4/3] object-cover" />
-                <div className="p-2 space-y-2">
-                  <input
-                    type="text"
-                    value={photo.caption}
-                    placeholder="Подпись (необязательно)"
-                    onChange={(e) =>
-                      updateGallery(images.gallery.map((p, i) => (i === index ? { ...p, caption: e.target.value } : p)))
-                    }
-                    className="w-full text-xs p-2 rounded-lg border border-[#D5CDC2] bg-white focus:outline-hidden focus:ring-2 focus:ring-[#466352]"
-                  />
-                  <div className="flex items-center justify-between">
-                    <div className="flex gap-1">
-                      <button type="button" disabled={index === 0} onClick={() => moveGallery(index, -1)} className="p-1.5 rounded-md text-[#5C6E61] hover:bg-[#ECE6DC] disabled:opacity-30" aria-label="Левее">
-                        <ArrowLeft className="w-4 h-4" />
-                      </button>
-                      <button type="button" disabled={index === images.gallery.length - 1} onClick={() => moveGallery(index, 1)} className="p-1.5 rounded-md text-[#5C6E61] hover:bg-[#ECE6DC] disabled:opacity-30" aria-label="Правее">
-                        <ArrowRight className="w-4 h-4" />
-                      </button>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => updateGallery(images.gallery.filter((_, i) => i !== index))}
-                      className="inline-flex items-center gap-1 px-2 py-1.5 rounded-md text-xs font-semibold text-[#A34236] hover:bg-[#FBEAE7]"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                      Убрать
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+      <h2 className="pt-4 font-display font-bold text-lg text-[#182B1F]">Слайды в карточках массажа</h2>
+      <p className="text-xs text-[#5C6E61] -mt-2">
+        Фото листаются в карточке услуги в разделе «Виды массажа и цены». Лучше горизонтальные фото; первое — обложка.
+      </p>
+      {services.map((service) => (
+        <PhotoListBlock
+          key={service.id}
+          title={service.title}
+          hint={`${(images.servicePhotos[service.id] ?? []).length} фото`}
+          emptyText="Пока нет фото — карточка на сайте без слайдов."
+          photos={images.servicePhotos[service.id] ?? []}
+          busy={busySlot === `service:${service.id}`}
+          onAdd={(files) => addToService(service.id, files)}
+          onChange={(photos) => setServicePhotos(service.id, photos)}
+        />
+      ))}
     </div>
   );
 };
