@@ -1,7 +1,7 @@
 import type { MassageService, ReviewItem, FaqItem } from '../types';
 
 export const MASTER_INFO = {
-  name: 'Анара Муратова',
+  name: 'Муратова Анара',
   role: 'Сертифицированный специалист по медицинскому и оздоровительному массажу',
   experienceYears: 2,
   city: 'Бежецк (Тверская область)',

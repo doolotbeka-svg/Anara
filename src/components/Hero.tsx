@@ -147,7 +147,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenBooking, onScrollToServices })
                 <div className="flex items-center gap-4 pt-1">
                   <MasterAvatar
                     className="w-12 h-12 rounded-full bg-[#466352] text-white font-display font-bold text-lg shrink-0"
-                    initials={t('hero.19', 'АМ')}
+                    initials={t('hero.19', 'МА')}
                   />
                   <div className="min-w-0">
                     <div className="font-semibold text-sm text-[#1E3024] truncate">
