@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { SERVICES } from '../data/massageData';
 import { MassageService } from '../types';
 import { Sparkles, Clock, Check, Gift, ArrowRight } from 'lucide-react';
-import { t } from '../content/store';
+import { getImages, t } from '../content/store';
+import { PhotoSlider } from './PhotoSlider';
 
 interface ServicesPricingProps {
   onSelectService: (service: MassageService, duration: { minutes: number; price: number }) => void;
@@ -100,6 +101,7 @@ export const ServicesPricing: React.FC<ServicesPricingProps> = ({ onSelectServic
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredServices.map((service) => {
             const currentDuration = getDuration(service);
+            const photos = getImages().servicePhotos[service.id] ?? [];
 
             return (
               <div
@@ -107,6 +109,11 @@ export const ServicesPricing: React.FC<ServicesPricingProps> = ({ onSelectServic
                 className="rounded-2xl bg-white border border-[#E3DCD1] p-6 flex flex-col justify-between hover:shadow-md transition-shadow group"
               >
                 <div>
+                  {/* Photos from the admin panel; cards without photos look as before */}
+                  {photos.length > 0 && (
+                    <PhotoSlider photos={photos} alt={service.title} className="-mx-6 -mt-6 mb-5 rounded-t-2xl" />
+                  )}
+
                   {/* Service Title */}
                   <div className="text-xs font-semibold text-[#466352] uppercase tracking-wider mb-1.5">
                     {service.category === 'therapeutic' ? t('services.12', 'Оздоровительный') : service.category === 'express' ? t('services.13', 'Экспресс-помощь') : service.category === 'relax' ? t('services.14', 'Спа и отдых') : t('services.15', 'Спецпрограмма')}
