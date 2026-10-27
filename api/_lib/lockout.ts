@@ -1,9 +1,9 @@
 import { createHash } from 'node:crypto';
 import { BlobPreconditionFailedError, get, put } from '@vercel/blob';
 
-// Login attempt limits, shared by all function instances through Blob storage.
-// An attempt is counted *before* the password is compared, with a compare-and-swap
-// write, so parallel requests can't squeeze in more guesses than the limit.
+// Rate limits (admin login, review submissions), shared by all function instances
+// through Blob storage. An attempt is counted *before* it is processed, with a
+// compare-and-swap write, so parallel requests can't squeeze in more than the limit.
 
 interface Rule {
   path: string;
@@ -21,19 +21,37 @@ interface State {
 const MINUTE = 60 * 1000;
 const MAX_WRITE_RETRIES = 8;
 
-/** 5 attempts per 15 minutes from one address. */
+const ipHash = (ip: string) => createHash('sha256').update(ip).digest('hex').slice(0, 24);
+
+/** Login: 5 attempts per 15 minutes from one address. */
 export const ipRule = (ip: string): Rule => ({
-  path: `security/ip-${createHash('sha256').update(ip).digest('hex').slice(0, 24)}.json`,
+  path: `security/ip-${ipHash(ip)}.json`,
   limit: 5,
   windowMs: 15 * MINUTE,
   lockMs: 15 * MINUTE,
 });
 
-/** 30 attempts per hour from all addresses together: stops guessing from many IPs. */
+/** Login: 30 attempts per hour from all addresses together: stops guessing from many IPs. */
 export const globalRule: Rule = {
   path: 'security/global.json',
   limit: 30,
   windowMs: 60 * MINUTE,
+  lockMs: 60 * MINUTE,
+};
+
+/** Reviews: 3 per hour from one address. */
+export const reviewIpRule = (ip: string): Rule => ({
+  path: `security/review-ip-${ipHash(ip)}.json`,
+  limit: 3,
+  windowMs: 60 * MINUTE,
+  lockMs: 60 * MINUTE,
+});
+
+/** Reviews: 30 per day from everyone, so spam can't flood the moderation list. */
+export const reviewGlobalRule: Rule = {
+  path: 'security/review-global.json',
+  limit: 30,
+  windowMs: 24 * 60 * MINUTE,
   lockMs: 60 * MINUTE,
 };
 

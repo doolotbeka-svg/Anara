@@ -1,12 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { CheckCircle, ExternalLink, History, Loader2, LockKeyhole, LogOut, Save } from 'lucide-react';
 import { DataKey, DEFAULT_DATA, emptyContent, resolveData, SiteContent } from '../content/merge';
-import { adminApi, errorText, getSavedToken, HistoryVersion, LockedError, saveToken, UnauthorizedError } from './api';
+import { adminApi, errorText, getSavedToken, HistoryVersion, LockedError, PendingReview, saveToken, UnauthorizedError } from './api';
 import { TextsEditor } from './TextsEditor';
 import { DataEditor } from './DataEditor';
 import { PhotosEditor } from './PhotosEditor';
+import { PendingReviews } from './PendingReviews';
 
-type Tab = 'texts' | 'photos' | DataKey | 'history';
+type Tab = 'texts' | 'photos' | 'pending' | DataKey | 'history';
 
 const DATA_TABS: { id: DataKey; label: string; description: string }[] = [
   { id: 'services', label: 'Услуги и цены', description: 'Виды массажа, описания, длительность и цены. Порядок здесь = порядок на сайте.' },
@@ -20,6 +21,7 @@ const DATA_TABS: { id: DataKey; label: string; description: string }[] = [
 const TABS: { id: Tab; label: string }[] = [
   { id: 'texts', label: 'Тексты' },
   { id: 'photos', label: 'Фото' },
+  { id: 'pending', label: 'Новые отзывы' },
   ...DATA_TABS.map(({ id, label }) => ({ id, label })),
   { id: 'history', label: 'История' },
 ];
@@ -168,6 +170,7 @@ export const AdminPanel: React.FC = () => {
   const [content, setContent] = useState<SiteContent | null>(null);
   const [savedJson, setSavedJson] = useState('');
   const [tab, setTab] = useState<Tab>('texts');
+  const [pendingReviews, setPendingReviews] = useState<PendingReview[] | null>(null);
   const [status, setStatus] = useState<{ type: 'saving' | 'saved' | 'error'; text?: string } | null>(null);
 
   // Session expired: ask for the password again but keep the edits in memory
@@ -205,6 +208,14 @@ export const AdminPanel: React.FC = () => {
     // After a re-login the edits in memory are kept, not reloaded
     if (token && content === null) loadContent(token);
   }, [token, loadContent]);
+
+  useEffect(() => {
+    if (!token) return;
+    adminApi
+      .getPendingReviews(token)
+      .then(setPendingReviews)
+      .catch((e) => (e instanceof UnauthorizedError ? endSession() : setPendingReviews([])));
+  }, [token, endSession]);
 
   const isDirty = content !== null && JSON.stringify(content) !== savedJson;
 
@@ -327,6 +338,15 @@ export const AdminPanel: React.FC = () => {
               }`}
             >
               {t.label}
+              {t.id === 'pending' && !!pendingReviews?.length && (
+                <span
+                  className={`ml-1.5 inline-flex items-center justify-center min-w-4 h-4 px-1 rounded-full text-[10px] ${
+                    tab === t.id ? 'bg-white text-[#466352]' : 'bg-[#C2410C] text-white'
+                  }`}
+                >
+                  {pendingReviews.length}
+                </span>
+              )}
             </button>
           ))}
         </nav>
@@ -366,6 +386,21 @@ export const AdminPanel: React.FC = () => {
               const data = { ...content.data };
               delete data[dataTab.id];
               update({ data });
+            }}
+          />
+        )}
+
+        {tab === 'pending' && (
+          <PendingReviews
+            token={token}
+            reviews={pendingReviews}
+            isDirty={isDirty}
+            onChanged={setPendingReviews}
+            onUnauthorized={endSession}
+            onPublished={(saved) => {
+              setContent(saved);
+              setSavedJson(JSON.stringify(saved));
+              setStatus({ type: 'saved' });
             }}
           />
         )}
