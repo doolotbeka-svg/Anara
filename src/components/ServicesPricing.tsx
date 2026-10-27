@@ -58,7 +58,7 @@ export const ServicesPricing: React.FC<ServicesPricingProps> = ({ onSelectServic
           </div>
 
           {/* Interactive Category Filter Tabs */}
-          <div className="flex items-center gap-1.5 p-1 bg-[#ECE6DC] rounded-xl overflow-x-auto max-w-full shrink-0">
+          <div className="flex items-center gap-1.5 p-1 bg-[#ECE6DC] rounded-xl overflow-x-auto max-w-full min-w-0">
             {categories.map((cat) => (
               <button
                 key={cat.id}

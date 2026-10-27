@@ -286,6 +286,8 @@ export const FAQ_ITEMS: FaqItem[] = [
 
 export const LOCATION_BEZHETSK = {
   address: 'Бежецк, ул. Мира, д. 2/50',
+  // Search query for Yandex Maps: it geocodes the address and puts a pin on it
+  mapQuery: 'Тверская область, Бежецк, улица Мира, 2/50',
   landmarks: 'Удобная городская локация, бесплатная парковка у дома',
   parking: 'Бесплатная парковка прямо у подъезда, всегда есть свободные места',
   transport: 'Остановка общественного транспорта в 2-3 минутах пешком',
