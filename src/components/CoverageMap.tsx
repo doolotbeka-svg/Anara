@@ -26,9 +26,9 @@ export const CoverageMap: React.FC = () => {
           <div className="text-xs font-semibold text-[#466352] uppercase tracking-wider mb-2">
             {t('location.13', 'Локация и удобство')}
           </div>
-          <h2 className="text-3xl sm:text-4xl font-display font-bold text-[#182B1F]">
+          <h1 className="text-3xl sm:text-4xl font-display font-bold text-[#182B1F]">
             {t('location.14', 'Где находится домашний кабинет и как добраться')}
-          </h2>
+          </h1>
           <p className="mt-2 text-sm text-[#4F6154]">
             {t('location.15', 'Кабинет расположен в Бежецке на улице Мира, д. 2/50 с комфортным подъездом и бесплатной парковкой.')}
           </p>

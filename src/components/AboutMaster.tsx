@@ -17,9 +17,9 @@ export const AboutMaster: React.FC = () => {
           <div className="text-xs font-semibold text-[#466352] uppercase tracking-wider mb-2">
             {t('about.1', 'О мастере и кабинете')}
           </div>
-          <h2 className="text-3xl sm:text-4xl font-display font-bold text-[#182B1F] leading-tight">
+          <h1 className="text-3xl sm:text-4xl font-display font-bold text-[#182B1F] leading-tight">
             {t('about.2', '«Моя цель — избавить вас от боли и спазмов в обстановке полного покоя, душевного тепла и уюта»')}
-          </h2>
+          </h1>
           <p className="mt-4 text-base text-[#4A594F] leading-relaxed">
             {t('about.3', 'Здравствуйте! Меня зовут Муратова Анара. Я дипломированный специалист по медицинскому и оздоровительному массажу со стажем 2 года. Принимаю клиентов в оборудованном домашнем кабинете в Бежецке на ул. Мира 2/50.')}
           </p>

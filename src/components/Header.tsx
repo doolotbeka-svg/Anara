@@ -3,6 +3,8 @@ import { Phone, MessageCircle, Send, FileText, Menu, X, Sparkles, MapPin } from 
 import { MASTER_INFO } from '../data/massageData';
 import { t } from '../content/store';
 import { MasterAvatar } from './MasterAvatar';
+import { PAGES } from '../pages';
+import { Link, usePath } from '../router';
 
 interface HeaderProps {
   onOpenBooking: () => void;
@@ -11,15 +13,7 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ onOpenBooking, onOpenTzModal }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  const navLinks = [
-    { label: t('header.1', 'Услуги и цены'), href: '#services' },
-    { label: t('header.2', 'О мастере и кабинете'), href: '#about' },
-    { label: t('header.3', 'Как проходит прием'), href: '#process' },
-    { label: t('header.4', 'Отзывы'), href: '#reviews' },
-    { label: t('header.5', 'Частые вопросы'), href: '#faq' },
-    { label: t('header.6', 'Где находится кабинет'), href: '#location' },
-  ];
+  const path = usePath();
 
   return (
     <header className="sticky top-0 z-40 bg-[#FAF8F5]/90 backdrop-blur-md border-b border-[#E8E2D8] transition-all">
@@ -27,7 +21,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBooking, onOpenTzModal }) 
         <div className="flex items-center justify-between gap-6 h-20">
           
           {/* Zone 1: Brand Wordmark (Single text element + master badge) */}
-          <a href="#" className="flex items-center gap-2.5 group whitespace-nowrap shrink-0">
+          <Link to="/" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-2.5 group whitespace-nowrap shrink-0">
             <MasterAvatar
               className="w-10 h-10 rounded-full bg-[#466352] text-white font-display font-bold text-base shadow-xs"
               initials={t('header.7', 'МА')}
@@ -41,18 +35,21 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBooking, onOpenTzModal }) 
                 <span>{t('header.8', 'Бежецк, ул. Мира 2/50')}</span>
               </span>
             </div>
-          </a>
+          </Link>
 
           {/* Zone 2: Navigation Links (Single-line, concise) */}
           <nav className="hidden xl:flex items-center gap-4 text-sm font-medium text-[#414E45]">
-            {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                className="hover:text-[#1D3325] hover:underline underline-offset-8 transition-colors whitespace-nowrap shrink-0 text-xs"
+            {PAGES.map((page) => (
+              <Link
+                key={page.path}
+                to={page.path}
+                aria-current={path === page.path ? 'page' : undefined}
+                className={`hover:text-[#1D3325] hover:underline underline-offset-8 transition-colors whitespace-nowrap shrink-0 text-xs ${
+                  path === page.path ? 'text-[#1D3325] font-semibold underline' : ''
+                }`}
               >
-                {link.label}
-              </a>
+                {page.label()}
+              </Link>
             ))}
           </nav>
 
@@ -118,15 +115,18 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBooking, onOpenTzModal }) 
           </div>
 
           <nav className="flex flex-col space-y-1">
-            {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
+            {PAGES.map((page) => (
+              <Link
+                key={page.path}
+                to={page.path}
                 onClick={() => setMobileMenuOpen(false)}
-                className="px-3 py-2 rounded-md text-xs font-semibold text-[#2C3B30] hover:bg-[#EAE5DC]"
+                aria-current={path === page.path ? 'page' : undefined}
+                className={`px-3 py-2 rounded-md text-xs font-semibold text-[#2C3B30] hover:bg-[#EAE5DC] ${
+                  path === page.path ? 'bg-[#EAE5DC]' : ''
+                }`}
               >
-                {link.label}
-              </a>
+                {page.label()}
+              </Link>
             ))}
           </nav>
           

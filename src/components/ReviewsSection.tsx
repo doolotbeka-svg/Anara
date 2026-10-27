@@ -74,9 +74,9 @@ export const ReviewsSection: React.FC = () => {
             <div className="text-xs font-semibold text-[#466352] uppercase tracking-wider mb-2">
               {t('reviews.10', 'Честные истории клиентов')}
             </div>
-            <h2 className="text-3xl sm:text-4xl font-display font-bold text-[#182B1F] leading-tight">
+            <h1 className="text-3xl sm:text-4xl font-display font-bold text-[#182B1F] leading-tight">
               {t('reviews.11', 'Отзывы жителей Бежецка')}
-            </h2>
+            </h1>
             <p className="mt-2 text-sm text-[#4E6053] max-w-xl">
               {t('reviews.12', 'Реальный опыт жителей города, которые посетили домашний спа-кабинет мастера Муратовой Анары.')}
             </p>

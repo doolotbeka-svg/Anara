@@ -43,9 +43,9 @@ export const SessionProcess: React.FC = () => {
           <div className="text-xs font-semibold text-[#466352] uppercase tracking-wider mb-2">
             {t('process.13', 'Прозрачность и комфорт')}
           </div>
-          <h2 className="text-3xl sm:text-4xl font-display font-bold text-[#182B1F]">
+          <h1 className="text-3xl sm:text-4xl font-display font-bold text-[#182B1F]">
             {t('process.14', 'Как проходит ваш визит в домашний кабинет')}
-          </h2>
+          </h1>
           <p className="mt-3 text-sm text-[#4E6053] leading-relaxed">
             {t('process.15', 'Всё организовано так, чтобы вы почувствовали себя желанным гостем, расслабились и забыли о городской суете с первой же минуты.')}
           </p>

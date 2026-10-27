@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { AboutMaster } from './components/AboutMaster';
@@ -21,6 +21,9 @@ import { MassageService } from './types';
 import { MessageCircle, Phone, Sparkles, FileText } from 'lucide-react';
 import { MASTER_INFO } from './data/massageData';
 import { t } from './content/store';
+import { findPage, PageId } from './pages';
+import { navigate, usePath } from './router';
+import { Breadcrumbs, PageFooter, PageLinks } from './components/PageNav';
 
 export default function App() {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
@@ -39,11 +42,35 @@ export default function App() {
     setIsBookingOpen(true);
   };
 
-  const handleScrollToServices = () => {
-    const el = document.getElementById('services');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
+  const path = usePath();
+  const page = findPage(path);
+  const isHome = path === '/';
+
+  // Title and description of the current page (texts editable in the admin panel)
+  useEffect(() => {
+    document.title = page
+      ? page.title()
+      : t('meta.1', 'Массаж на дому у мастера в Бежецке | Уютный домашний кабинет');
+    document
+      .querySelector('meta[name="description"]')
+      ?.setAttribute(
+        'content',
+        page
+          ? page.description()
+          : t('meta.2', 'Профессиональный оздоровительный и расслабляющий массаж в оборудованном домашнем кабинете мастера в Бежецке. Сниму боль в спине и усталость. Стаж 2 года, анатомический стол, натуральные масла.')
+      );
+  }, [page]);
+
+  const bookService = (service: MassageService, duration: { minutes: number; price: number }) =>
+    handleOpenBooking(service, duration);
+
+  const pageContent: Record<PageId, React.ReactNode> = {
+    services: <ServicesPricing onSelectService={bookService} />,
+    about: <AboutMaster />,
+    process: <SessionProcess />,
+    reviews: <ReviewsSection />,
+    faq: <FaqSection />,
+    location: <CoverageMap />,
   };
 
   return (
@@ -55,38 +82,38 @@ export default function App() {
         onOpenTzModal={() => setIsTzOpen(true)}
       />
 
-      {/* Main Page Flow */}
       <main className="flex-1">
-        {/* 1. Hero Block */}
-        <Hero
-          onOpenBooking={() => handleOpenBooking()}
-          onScrollToServices={handleScrollToServices}
-        />
+        {isHome ? (
+          <>
+            <Hero onOpenBooking={() => handleOpenBooking()} onScrollToServices={() => navigate('/uslugi')} />
 
-        {/* 2. About Master & Qualifications */}
-        <AboutMaster />
+            {/* Entry points to the inner pages */}
+            <section className="py-14 bg-[#FAF8F5] border-t border-[#E8E2D8]">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <PageLinks title={t('nav.8', 'Всё о массаже в домашнем кабинете')} />
+              </div>
+            </section>
 
-        {/* 3. Services & Transparent Pricing */}
-        <ServicesPricing
-          onSelectService={(service, duration) => handleOpenBooking(service, duration)}
-        />
-
-        {/* Interactive Symptom Helper */}
-        <SymptomFinder
-          onSelectProgram={(service, duration) => handleOpenBooking(service, duration)}
-        />
-
-        {/* 4. Session Process & Objection Handling */}
-        <SessionProcess />
-
-        {/* 5. Reviews from Bezhetsk */}
-        <ReviewsSection />
-
-        {/* 6. FAQ Section */}
-        <FaqSection />
-
-        {/* Geographic Coverage in Bezhetsk */}
-        <CoverageMap />
+            <SymptomFinder onSelectProgram={bookService} />
+          </>
+        ) : page ? (
+          <>
+            <Breadcrumbs page={page} />
+            {pageContent[page.id]}
+            <PageFooter page={page} onOpenBooking={() => handleOpenBooking()} />
+          </>
+        ) : (
+          // Unknown address
+          <section className="py-20 bg-[#FAF8F5]">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+              <div>
+                <h1 className="text-3xl sm:text-4xl font-display font-bold text-[#182B1F]">{t('nav.9', 'Такой страницы нет')}</h1>
+                <p className="mt-2 text-sm text-[#4F6154]">{t('nav.10', 'Возможно, ссылка устарела. Выберите нужный раздел:')}</p>
+              </div>
+              <PageLinks title={t('nav.11', 'Разделы сайта')} />
+            </div>
+          </section>
+        )}
       </main>
 
       {/* 7. Footer */}
