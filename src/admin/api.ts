@@ -40,6 +40,20 @@ async function request<T>(token: string, path: string, init: RequestInit = {}): 
   return data as T;
 }
 
+export interface PendingReview {
+  pathname: string;
+  review: {
+    id: string;
+    name: string;
+    age: number;
+    location: string;
+    service: string;
+    text: string;
+    rating: number;
+    createdAt: string;
+  };
+}
+
 export interface HistoryVersion {
   pathname: string;
   uploadedAt: string;
@@ -66,6 +80,19 @@ export const adminApi = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ pathname }),
+    }),
+  getPendingReviews: (token: string) => request<PendingReview[]>(token, '/api/admin/reviews'),
+  publishReview: (token: string, pathname: string) =>
+    request<SiteContent>(token, '/api/admin/reviews', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'publish', pathname }),
+    }),
+  deleteReview: (token: string, pathname: string) =>
+    request<{ ok: true }>(token, '/api/admin/reviews', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'delete', pathname }),
     }),
   uploadImage: (token: string, file: Blob) =>
     request<{ url: string }>(token, '/api/admin/upload', {

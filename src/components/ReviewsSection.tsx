@@ -1,21 +1,25 @@
 import React, { useState } from 'react';
 import { Star, MapPin, CheckCircle, MessageSquarePlus, Quote } from 'lucide-react';
-import { REVIEWS } from '../data/massageData';
-import { ReviewItem } from '../types';
+import { REVIEWS, SERVICES } from '../data/massageData';
 import { t } from '../content/store';
 
 export const ReviewsSection: React.FC = () => {
   const [selectedTag, setSelectedTag] = useState<string>('all');
   const [isAddingReview, setIsAddingReview] = useState(false);
   const [newReviewSent, setNewReviewSent] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const [sendError, setSendError] = useState<string | null>(null);
 
-  // Simple local state for new review form
-  const [formData, setFormData] = useState({
+  const emptyForm = () => ({
     name: '',
+    age: '',
     location: t('reviews.1', 'Бежецк, '),
+    serviceId: SERVICES[0]?.id ?? '',
     text: '',
-    service: t('reviews.2', 'Массаж спины')
+    rating: 5,
+    website: '', // honeypot: hidden from people, bots fill it in
   });
+  const [formData, setFormData] = useState(emptyForm);
 
   const tags = [
     { id: 'all', label: t('reviews.3', 'Все отзывы') },
@@ -35,15 +39,29 @@ export const ReviewsSection: React.FC = () => {
         return true;
       });
 
-  const handleSubmitReview = (e: React.FormEvent) => {
+  const handleSubmitReview = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.text) return;
-    setNewReviewSent(true);
-    setTimeout(() => {
-      setNewReviewSent(false);
-      setIsAddingReview(false);
-      setFormData({ name: '', location: t('reviews.8', 'Бежецк, '), text: '', service: t('reviews.9', 'Массаж спины') });
-    }, 2500);
+    if (formData.text.trim().length < 10) {
+      setSendError(t('reviews.30', 'Напишите, пожалуйста, хотя бы пару предложений.'));
+      return;
+    }
+    setIsSending(true);
+    setSendError(null);
+    try {
+      const res = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...formData, age: Number(formData.age) || 0 }),
+      });
+      if (res.status === 429) throw new Error(t('reviews.31', 'Вы уже отправили несколько отзывов. Попробуйте позже.'));
+      if (!res.ok) throw new Error(t('reviews.32', 'Не удалось отправить отзыв. Попробуйте ещё раз или напишите мастеру в WhatsApp.'));
+      setNewReviewSent(true);
+      setFormData(emptyForm());
+    } catch (err) {
+      setSendError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setIsSending(false);
+    }
   };
 
   return (
@@ -60,13 +78,17 @@ export const ReviewsSection: React.FC = () => {
               {t('reviews.11', 'Отзывы жителей Бежецка')}
             </h2>
             <p className="mt-2 text-sm text-[#4E6053] max-w-xl">
-              {t('reviews.12', 'Реальный опыт жителей города, которые посетили домашний спа-кабинет мастера Анары Муратовой.')}
+              {t('reviews.12', 'Реальный опыт жителей города, которые посетили домашний спа-кабинет мастера Муратовой Анары.')}
             </p>
           </div>
 
           <div className="flex items-center gap-3">
             <button
-              onClick={() => setIsAddingReview(!isAddingReview)}
+              onClick={() => {
+                setIsAddingReview(!isAddingReview);
+                setNewReviewSent(false);
+                setSendError(null);
+              }}
               className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-[#375240] bg-white hover:bg-[#F9F7F4] rounded-lg border border-[#D5CDC1] shadow-xs transition-colors"
             >
               <MessageSquarePlus className="w-4 h-4 text-[#466352]" />
@@ -109,12 +131,34 @@ export const ReviewsSection: React.FC = () => {
               </div>
             ) : (
               <form onSubmit={handleSubmitReview} className="space-y-4">
+                {/* Star rating */}
+                <div>
+                  <div className="block text-[11px] font-semibold text-[#48594E] mb-1">{t('reviews.33', 'Ваша оценка')}</div>
+                  <div className="flex items-center gap-1" role="radiogroup" aria-label={t('reviews.33', 'Ваша оценка')}>
+                    {[1, 2, 3, 4, 5].map((value) => (
+                      <button
+                        key={value}
+                        type="button"
+                        role="radio"
+                        aria-checked={formData.rating === value}
+                        aria-label={`${value} из 5`}
+                        onClick={() => setFormData({ ...formData, rating: value })}
+                        className="p-0.5 rounded focus:outline-hidden focus:ring-2 focus:ring-[#466352]"
+                      >
+                        <Star className={`w-7 h-7 transition-colors ${value <= formData.rating ? 'fill-[#F59E0B] text-[#F59E0B]' : 'text-[#D5CDC1]'}`} />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
                     <label className="block text-[11px] font-semibold text-[#48594E] mb-1">{t('reviews.17', 'Ваше имя')}</label>
                     <input
                       type="text"
                       required
+                      minLength={2}
+                      maxLength={60}
                       placeholder={t('reviews.18', 'Мария')}
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -122,37 +166,67 @@ export const ReviewsSection: React.FC = () => {
                     />
                   </div>
                   <div>
+                    <label className="block text-[11px] font-semibold text-[#48594E] mb-1">{t('reviews.34', 'Возраст (необязательно)')}</label>
+                    <input
+                      type="number"
+                      min={14}
+                      max={110}
+                      inputMode="numeric"
+                      value={formData.age}
+                      onChange={(e) => setFormData({ ...formData, age: e.target.value })}
+                      className="w-full text-xs p-2.5 rounded-lg border border-[#D5CDC1] focus:outline-hidden focus:ring-2 focus:ring-[#466352]"
+                    />
+                  </div>
+                  <div>
                     <label className="block text-[11px] font-semibold text-[#48594E] mb-1">{t('reviews.19', 'Район / Улица в Бежецке')}</label>
                     <input
                       type="text"
+                      maxLength={80}
                       placeholder={t('reviews.20', 'Бежецк, ул. Ленина')}
                       value={formData.location}
                       onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                       className="w-full text-xs p-2.5 rounded-lg border border-[#D5CDC1] focus:outline-hidden focus:ring-2 focus:ring-[#466352]"
                     />
                   </div>
-                  <div>
-                    <label className="block text-[11px] font-semibold text-[#48594E] mb-1">{t('reviews.21', 'Вид массажа')}</label>
-                    <input
-                      type="text"
-                      placeholder={t('reviews.22', 'Массаж спины и шеи')}
-                      value={formData.service}
-                      onChange={(e) => setFormData({ ...formData, service: e.target.value })}
-                      className="w-full text-xs p-2.5 rounded-lg border border-[#D5CDC1] focus:outline-hidden focus:ring-2 focus:ring-[#466352]"
-                    />
-                  </div>
                 </div>
+                <div>
+                  <label className="block text-[11px] font-semibold text-[#48594E] mb-1">{t('reviews.21', 'Вид массажа')}</label>
+                  <select
+                    value={formData.serviceId}
+                    onChange={(e) => setFormData({ ...formData, serviceId: e.target.value })}
+                    className="w-full text-xs p-2.5 rounded-lg border border-[#D5CDC1] bg-white focus:outline-hidden focus:ring-2 focus:ring-[#466352]"
+                  >
+                    {SERVICES.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.title}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                {/* Honeypot: invisible to people, not reachable with Tab */}
+                <input
+                  type="text"
+                  name="website"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                  value={formData.website}
+                  onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                  className="absolute -left-[9999px] w-px h-px opacity-0"
+                />
                 <div>
                   <label className="block text-[11px] font-semibold text-[#48594E] mb-1">{t('reviews.23', 'Ваш отзыв')}</label>
                   <textarea
                     rows={3}
                     required
+                    maxLength={2000}
                     placeholder={t('reviews.24', 'Расскажите о ваших ощущениях после сеанса...')}
                     value={formData.text}
                     onChange={(e) => setFormData({ ...formData, text: e.target.value })}
                     className="w-full text-xs p-2.5 rounded-lg border border-[#D5CDC1] focus:outline-hidden focus:ring-2 focus:ring-[#466352]"
                   />
                 </div>
+                {sendError && <p className="text-xs text-[#A34236]">{sendError}</p>}
                 <div className="flex items-center justify-end gap-2">
                   <button
                     type="button"
@@ -163,9 +237,10 @@ export const ReviewsSection: React.FC = () => {
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 text-xs font-semibold text-white bg-[#466352] hover:bg-[#385142] rounded-lg shadow-xs"
+                    disabled={isSending}
+                    className="px-4 py-2 text-xs font-semibold text-white bg-[#466352] hover:bg-[#385142] rounded-lg shadow-xs disabled:opacity-50"
                   >
-                    {t('reviews.26', 'Отправить отзыв')}
+                    {isSending ? t('reviews.35', 'Отправляем…') : t('reviews.26', 'Отправить отзыв')}
                   </button>
                 </div>
               </form>
@@ -184,7 +259,8 @@ export const ReviewsSection: React.FC = () => {
                 {/* Top: Stars and Date */}
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-1">
-                    {[...Array(rev.rating)].map((_, i) => (
+                    {/* Clamped: a rating typed as 0, 4.5 or 7 in the admin must not break the page */}
+                    {Array.from({ length: Math.max(0, Math.min(5, Math.round(Number(rev.rating) || 0))) }, (_, i) => (
                       <Star key={i} className="w-4 h-4 fill-[#F59E0B] text-[#F59E0B]" />
                     ))}
                   </div>
@@ -207,7 +283,14 @@ export const ReviewsSection: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="font-semibold text-xs text-[#182B1F] flex items-center gap-1.5">
-                      <span>{rev.name}, {rev.age}{' '}{t('reviews.27', 'лет')}</span>
+                      <span>
+                        {rev.name}
+                        {rev.age > 0 && (
+                          <>
+                            , {rev.age}{' '}{t('reviews.27', 'лет')}
+                          </>
+                        )}
+                      </span>
                       {rev.verified && (
                         <span title={t('reviews.28', 'Подтвержденный клиент')} className="inline-flex">
                           <CheckCircle className="w-3.5 h-3.5 text-[#466352]" />
