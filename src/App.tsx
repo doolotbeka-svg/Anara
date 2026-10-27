@@ -86,14 +86,6 @@ export default function App() {
         {isHome ? (
           <>
             <Hero onOpenBooking={() => handleOpenBooking()} onScrollToServices={() => navigate('/uslugi')} />
-
-            {/* Entry points to the inner pages */}
-            <section className="py-14 bg-[#FAF8F5] border-t border-[#E8E2D8]">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <PageLinks title={t('nav.8', 'Всё о массаже в домашнем кабинете')} />
-              </div>
-            </section>
-
             <SymptomFinder onSelectProgram={bookService} />
           </>
         ) : page ? (
