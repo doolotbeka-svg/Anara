@@ -22,9 +22,9 @@ export const FaqSection: React.FC = () => {
           <div className="text-xs font-semibold text-[#466352] uppercase tracking-wider mb-2">
             {t('faq.1', 'Ответы на частые вопросы')}
           </div>
-          <h2 className="text-3xl sm:text-4xl font-display font-bold text-[#182B1F]">
+          <h1 className="text-3xl sm:text-4xl font-display font-bold text-[#182B1F]">
             {t('faq.2', 'Всё, что важно знать перед первым сеансом')}
-          </h2>
+          </h1>
           <p className="mt-3 text-sm text-[#4F6255] max-w-xl mx-auto">
             {t('faq.3', 'Собрала самые частые вопросы жителей Бежецка, чтобы вы были уверены в удобстве и безопасности.')}
           </p>

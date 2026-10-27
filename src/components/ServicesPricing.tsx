@@ -51,9 +51,9 @@ export const ServicesPricing: React.FC<ServicesPricingProps> = ({ onSelectServic
             <div className="text-xs font-semibold text-[#466352] uppercase tracking-wider mb-2">
               {t('services.6', 'Прайс-лист и программы')}
             </div>
-            <h2 className="text-3xl sm:text-4xl font-display font-bold text-[#182B1F] leading-tight">
+            <h1 className="text-3xl sm:text-4xl font-display font-bold text-[#182B1F] leading-tight">
               {t('services.7', 'Виды массажа и честные цены')}
-            </h2>
+            </h1>
             <p className="mt-2 text-sm text-[#4A5A4F] max-w-xl">
               {t('services.8', 'Прием в оборудованном домашнем кабинете в Бежецке. Без салонных наценок, все расходники и травяной чай включены.')}
             </p>

@@ -2,7 +2,7 @@
 // The admin panel reads those sources (only this lazy-loaded chunk includes them)
 // to list all texts in page order, so the list can't drift from the code.
 
-const sources = import.meta.glob(['../main.tsx', '../App.tsx', '../components/*.tsx'], {
+const sources = import.meta.glob(['../main.tsx', '../App.tsx', '../pages.ts', '../components/*.tsx'], {
   query: '?raw',
   import: 'default',
   eager: true,
@@ -22,7 +22,9 @@ export interface TextSection {
 // Page order; keys missing here go to the end
 const SECTION_LABELS: [string, string][] = [
   ['meta', 'Заголовок страницы в браузере и поиске'],
-  ['header', 'Шапка и меню'],
+  ['header', 'Шапка и меню (названия страниц)'],
+  ['pages', 'Страницы: описания, заголовки для поиска'],
+  ['nav', 'Переходы между страницами и запись внизу страниц'],
   ['hero', 'Первый экран'],
   ['about', 'О мастере и кабинете'],
   ['services', 'Услуги и цены'],

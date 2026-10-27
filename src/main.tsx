@@ -1,5 +1,5 @@
 import {createRoot} from 'react-dom/client';
-import {loadContent, t} from './content/store';
+import {loadContent} from './content/store';
 import './index.css';
 
 const root = createRoot(document.getElementById('root')!);
@@ -15,13 +15,6 @@ async function start() {
   // Texts, data and photos from the admin panel must be in place before components
   // are imported: some of them read texts at module level.
   await loadContent();
-  document.title = t('meta.1', 'Массаж на дому у мастера в Бежецке | Уютный домашний кабинет');
-  document
-    .querySelector('meta[name="description"]')
-    ?.setAttribute(
-      'content',
-      t('meta.2', 'Профессиональный оздоровительный и расслабляющий массаж в оборудованном домашнем кабинете мастера в Бежецке. Сниму боль в спине и усталость. Стаж 2 года, анатомический стол, натуральные масла.')
-    );
 
   const {default: App} = await import('./App.tsx');
   root.render(<App />);
