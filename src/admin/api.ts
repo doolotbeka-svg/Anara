@@ -94,6 +94,14 @@ export const adminApi = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'delete', pathname }),
     }),
+  getTelegram: (token: string) =>
+    request<{ tokenConfigured: boolean; chatTitle: string | null }>(token, '/api/admin/telegram'),
+  telegramAction: (token: string, action: 'connect' | 'test' | 'disconnect') =>
+    request<{ chatTitle?: string; ok?: true }>(token, '/api/admin/telegram', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action }),
+    }),
   uploadImage: (token: string, file: Blob) =>
     request<{ url: string }>(token, '/api/admin/upload', {
       method: 'POST',
@@ -106,6 +114,9 @@ export const ERROR_MESSAGES: Record<string, string> = {
   admin_not_configured: 'На сервере не задан пароль ADMIN_PASSWORD.',
   storage_error: 'Хранилище недоступно. Попробуйте ещё раз через минуту.',
   too_large: 'Файл слишком большой.',
+  telegram_not_configured: 'Токен бота не задан в Vercel (TELEGRAM_BOT_TOKEN).',
+  telegram_error: 'Telegram не ответил. Проверьте токен бота и попробуйте ещё раз.',
+  no_start_message: 'Бот пока не получал сообщений. Откройте бота в Telegram, нажмите «Старт» и попробуйте снова.',
   unsupported_type: 'Этот формат файла не поддерживается. Загрузите JPG, PNG или WebP.',
 };
 
