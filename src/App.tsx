@@ -20,6 +20,7 @@ import { ChatWidget } from './components/ChatWidget';
 import { MassageService } from './types';
 import { MessageCircle, Phone, Sparkles, FileText } from 'lucide-react';
 import { MASTER_INFO } from './data/massageData';
+import { t } from './content/store';
 
 export default function App() {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
@@ -120,7 +121,7 @@ export default function App() {
           className="flex-1 flex items-center justify-center gap-1.5 py-2.5 px-2 bg-[#25D366] text-white text-xs font-bold rounded-xl shadow-xs"
         >
           <MessageCircle className="w-4 h-4" />
-          <span>WhatsApp</span>
+          <span>{t('app.1', 'WhatsApp')}</span>
         </a>
 
         <button
@@ -128,14 +129,14 @@ export default function App() {
           className="flex-1 flex items-center justify-center gap-1.5 py-2.5 px-2 bg-[#466352] text-white text-xs font-bold rounded-xl shadow-xs"
         >
           <Sparkles className="w-3.5 h-3.5" />
-          <span>Записаться</span>
+          <span>{t('app.2', 'Записаться')}</span>
         </button>
 
         <a
           href={`tel:${MASTER_INFO.phone.replace(/[^+\d]/g, '')}`}
           className="p-2.5 bg-[#ECE6DC] text-[#182B1F] rounded-xl border border-[#D5CDC1]"
-          title="Позвонить мастеру"
-          aria-label="Позвонить мастеру"
+          title={t('app.3', 'Позвонить мастеру')}
+          aria-label={t('app.4', 'Позвонить мастеру')}
         >
           <Phone className="w-4 h-4 text-[#466352]" />
         </a>

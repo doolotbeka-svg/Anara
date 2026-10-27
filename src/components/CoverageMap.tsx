@@ -1,15 +1,16 @@
 import React from 'react';
 import { MapPin, Navigation, Car, Bus, ShieldCheck, Coffee, ExternalLink } from 'lucide-react';
 import { LOCATION_BEZHETSK, MASTER_INFO } from '../data/massageData';
+import { t } from '../content/store';
 
 export const CoverageMap: React.FC = () => {
   const travelEstimates = [
-    { from: 'Центральный район (ул. Ленина, пл. Советская)', time: '4–7 мин на авто / 12 мин пешком' },
-    { from: 'Микрорайон «Восток»', time: '6–8 мин на авто / прямой автобус' },
-    { from: 'Район «Штаб»', time: '5–8 мин на авто' },
-    { from: 'Район «Сельмаш»', time: '8–10 мин на авто' },
-    { from: 'Район ж/д Вокзала', time: '8–12 мин на авто' },
-    { from: 'Заречье (за р. Молога / Остречина)', time: '10–14 мин на авто' },
+    { from: t('location.1', 'Центральный район (ул. Ленина, пл. Советская)'), time: t('location.2', '4–7 мин на авто / 12 мин пешком') },
+    { from: t('location.3', 'Микрорайон «Восток»'), time: t('location.4', '6–8 мин на авто / прямой автобус') },
+    { from: t('location.5', 'Район «Штаб»'), time: t('location.6', '5–8 мин на авто') },
+    { from: t('location.7', 'Район «Сельмаш»'), time: t('location.8', '8–10 мин на авто') },
+    { from: t('location.9', 'Район ж/д Вокзала'), time: t('location.10', '8–12 мин на авто') },
+    { from: t('location.11', 'Заречье (за р. Молога / Остречина)'), time: t('location.12', '10–14 мин на авто') },
   ];
 
   const mapQuery = encodeURIComponent(LOCATION_BEZHETSK.mapQuery);
@@ -23,13 +24,13 @@ export const CoverageMap: React.FC = () => {
         {/* Header */}
         <div className="max-w-2xl mb-12">
           <div className="text-xs font-semibold text-[#466352] uppercase tracking-wider mb-2">
-            Локация и удобство
+            {t('location.13', 'Локация и удобство')}
           </div>
           <h2 className="text-3xl sm:text-4xl font-display font-bold text-[#182B1F]">
-            Где находится домашний кабинет и как добраться
+            {t('location.14', 'Где находится домашний кабинет и как добраться')}
           </h2>
           <p className="mt-2 text-sm text-[#4F6154]">
-            Кабинет расположен в Бежецке на улице Мира, д. 2/50 с комфортным подъездом и бесплатной парковкой.
+            {t('location.15', 'Кабинет расположен в Бежецке на улице Мира, д. 2/50 с комфортным подъездом и бесплатной парковкой.')}
           </p>
         </div>
 
@@ -55,31 +56,31 @@ export const CoverageMap: React.FC = () => {
             <div className="space-y-3 pt-2 text-xs sm:text-sm text-[#415045]">
               <div className="flex items-start gap-3">
                 <Car className="w-4 h-4 text-[#466352] shrink-0 mt-0.5" />
-                <span><strong>Для автомобилистов:</strong> {LOCATION_BEZHETSK.parking}</span>
+                <span><strong>{t('location.16', 'Для автомобилистов:')}</strong> {LOCATION_BEZHETSK.parking}</span>
               </div>
               <div className="flex items-start gap-3">
                 <Bus className="w-4 h-4 text-[#466352] shrink-0 mt-0.5" />
-                <span><strong>Общественный транспорт:</strong> {LOCATION_BEZHETSK.transport}</span>
+                <span><strong>{t('location.17', 'Общественный транспорт:')}</strong> {LOCATION_BEZHETSK.transport}</span>
               </div>
               <div className="flex items-start gap-3">
                 <ShieldCheck className="w-4 h-4 text-[#466352] shrink-0 mt-0.5" />
-                <span><strong>Конфиденциальность:</strong> отдельная тихая комната, где во время сеанса нет посторонних.</span>
+                <span><strong>{t('location.18', 'Конфиденциальность:')}</strong>{' '}{t('location.19', 'отдельная тихая комната, где во время сеанса нет посторонних.')}</span>
               </div>
               <div className="flex items-start gap-3">
                 <Coffee className="w-4 h-4 text-[#466352] shrink-0 mt-0.5" />
-                <span><strong>Чайная зона:</strong> после сеанса можно не спеша посидеть в кресле с чашкой горячего чая.</span>
+                <span><strong>{t('location.20', 'Чайная зона:')}</strong>{' '}{t('location.21', 'после сеанса можно не спеша посидеть в кресле с чашкой горячего чая.')}</span>
               </div>
             </div>
 
             <div className="p-3.5 rounded-xl bg-[#FAF8F5] border border-[#E9E2D8] text-xs text-[#5E7164]">
-              * Номер подъезда и этаж высылаются личным сообщением в WhatsApp или Telegram сразу после согласования даты и времени сеанса.
+              {t('location.22', '* Номер подъезда и этаж высылаются личным сообщением в WhatsApp или Telegram сразу после согласования даты и времени сеанса.')}
             </div>
           </div>
 
           {/* Travel time from Bezhetsk neighborhoods */}
           <div className="lg:col-span-6 space-y-4">
             <div className="text-xs font-semibold text-[#466352] uppercase tracking-wider">
-              Время в пути из районов города:
+              {t('location.23', 'Время в пути из районов города:')}
             </div>
 
             <div className="grid grid-cols-1 gap-2.5">
@@ -100,7 +101,7 @@ export const CoverageMap: React.FC = () => {
             </div>
 
             <div className="p-4 rounded-xl bg-white border border-[#DDD5CA] flex items-center justify-between text-xs text-[#526457]">
-              <span>Записаться или задать вопрос по проезду:</span>
+              <span>{t('location.24', 'Записаться или задать вопрос по проезду:')}</span>
               <a
                 href={`tel:${MASTER_INFO.phone.replace(/[^+\d]/g, '')}`}
                 className="font-bold text-[#182B1F] hover:text-[#466352] whitespace-nowrap transition-colors"
@@ -132,7 +133,7 @@ export const CoverageMap: React.FC = () => {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 font-semibold text-[#182B1F] hover:text-[#466352] transition-colors"
             >
-              Открыть в Яндекс Картах и построить маршрут
+              {t('location.25', 'Открыть в Яндекс Картах и построить маршрут')}
               <ExternalLink className="w-3.5 h-3.5" />
             </a>
           </div>

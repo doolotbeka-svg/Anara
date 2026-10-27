@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronDown, ChevronUp, HelpCircle } from 'lucide-react';
 import { FAQ_ITEMS } from '../data/massageData';
+import { t } from '../content/store';
 
 export const FaqSection: React.FC = () => {
   // Store expanded FAQ item IDs (default expand first item)
@@ -19,13 +20,13 @@ export const FaqSection: React.FC = () => {
         {/* Section Header */}
         <div className="text-center mb-12">
           <div className="text-xs font-semibold text-[#466352] uppercase tracking-wider mb-2">
-            Ответы на частые вопросы
+            {t('faq.1', 'Ответы на частые вопросы')}
           </div>
           <h2 className="text-3xl sm:text-4xl font-display font-bold text-[#182B1F]">
-            Всё, что важно знать перед первым сеансом
+            {t('faq.2', 'Всё, что важно знать перед первым сеансом')}
           </h2>
           <p className="mt-3 text-sm text-[#4F6255] max-w-xl mx-auto">
-            Собрала самые частые вопросы жителей Бежецка, чтобы вы были уверены в удобстве и безопасности.
+            {t('faq.3', 'Собрала самые частые вопросы жителей Бежецка, чтобы вы были уверены в удобстве и безопасности.')}
           </p>
         </div>
 
@@ -68,10 +69,10 @@ export const FaqSection: React.FC = () => {
         {/* Still have questions prompt */}
         <div className="mt-10 text-center p-6 rounded-2xl bg-[#F4EFE9] border border-[#E0D8CC]">
           <h4 className="font-display font-bold text-base text-[#182B1F]">
-            Остался вопрос или хотите проконсультироваться лично?
+            {t('faq.4', 'Остался вопрос или хотите проконсультироваться лично?')}
           </h4>
           <p className="text-xs text-[#56685B] mt-1">
-            Напишите мастеру в мессенджер — с радостью отвечу на все вопросы и помогу подобрать массаж.
+            {t('faq.5', 'Напишите мастеру в мессенджер — с радостью отвечу на все вопросы и помогу подобрать массаж.')}
           </p>
           <div className="mt-4 flex items-center justify-center gap-3">
             <a
@@ -80,7 +81,7 @@ export const FaqSection: React.FC = () => {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-[#184824] bg-[#E1EFE5] hover:bg-[#D5E8DA] rounded-lg border border-[#BCD9C4] transition-colors"
             >
-              Спросить в WhatsApp
+              {t('faq.6', 'Спросить в WhatsApp')}
             </a>
             <a
               href="https://t.me/massage_bezhetsk"
@@ -88,7 +89,7 @@ export const FaqSection: React.FC = () => {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-[#173F5E] bg-[#E1EDF5] hover:bg-[#D4E4EF] rounded-lg border border-[#BCD4E5] transition-colors"
             >
-              Спросить в Telegram
+              {t('faq.7', 'Спросить в Telegram')}
             </a>
           </div>
         </div>

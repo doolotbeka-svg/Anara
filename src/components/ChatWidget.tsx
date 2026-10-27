@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Bot, Send, X, Loader2, MessageCircle } from 'lucide-react';
 import { MASTER_INFO } from '../data/massageData';
+import { t } from '../content/store';
 
 interface ChatMessage {
   role: 'user' | 'model';
@@ -9,13 +10,13 @@ interface ChatMessage {
 
 const GREETING: ChatMessage = {
   role: 'model',
-  text: 'Здравствуйте! Я помощник мастера Анары. Подскажу, какой массаж подойдёт, сколько стоит сеанс и как к нам добраться. Что вас беспокоит?',
+  text: t('chat.1', 'Здравствуйте! Я помощник мастера Анары. Подскажу, какой массаж подойдёт, сколько стоит сеанс и как к нам добраться. Что вас беспокоит?'),
 };
 
 const QUICK_QUESTIONS = [
-  'Какой массаж подойдёт при боли в спине?',
-  'Сколько стоит сеанс?',
-  'Где находится кабинет?',
+  t('chat.2', 'Какой массаж подойдёт при боли в спине?'),
+  t('chat.3', 'Сколько стоит сеанс?'),
+  t('chat.4', 'Где находится кабинет?'),
 ];
 
 export const ChatWidget: React.FC = () => {
@@ -51,7 +52,7 @@ export const ChatWidget: React.FC = () => {
       if (!res.ok || !data.reply) throw new Error(data.error || 'request_failed');
       setMessages((prev) => [...prev, { role: 'model', text: data.reply }]);
     } catch {
-      setError('Помощник сейчас недоступен. Напишите мастеру напрямую — она ответит в течение 10–15 минут.');
+      setError(t('chat.5', 'Помощник сейчас недоступен. Напишите мастеру напрямую — она ответит в течение 10–15 минут.'));
     } finally {
       setIsLoading(false);
     }
@@ -68,10 +69,10 @@ export const ChatWidget: React.FC = () => {
         <button
           onClick={() => setIsOpen(true)}
           className="fixed z-40 right-4 bottom-20 sm:bottom-6 sm:right-6 flex items-center gap-2 pl-3.5 pr-4 py-3 rounded-full bg-[#466352] hover:bg-[#385142] text-white text-xs font-semibold shadow-lg transition-colors"
-          aria-label="Открыть чат с помощником"
+          aria-label={t('chat.6', 'Открыть чат с помощником')}
         >
           <Bot className="w-5 h-5" />
-          <span className="hidden sm:inline">Задать вопрос</span>
+          <span className="hidden sm:inline">{t('chat.7', 'Задать вопрос')}</span>
         </button>
       )}
 
@@ -84,14 +85,14 @@ export const ChatWidget: React.FC = () => {
                 <Bot className="w-5 h-5" />
               </div>
               <div>
-                <div className="text-sm font-bold text-[#182B1F]">Помощник Анары</div>
-                <div className="text-[11px] text-[#5C6E61]">ИИ-ассистент · отвечает сразу</div>
+                <div className="text-sm font-bold text-[#182B1F]">{t('chat.8', 'Помощник Анары')}</div>
+                <div className="text-[11px] text-[#5C6E61]">{t('chat.9', 'ИИ-ассистент · отвечает сразу')}</div>
               </div>
             </div>
             <button
               onClick={() => setIsOpen(false)}
               className="p-2 rounded-full text-[#738377] hover:bg-[#ECE6DC] hover:text-[#182B1F] transition-colors"
-              aria-label="Закрыть чат"
+              aria-label={t('chat.10', 'Закрыть чат')}
             >
               <X className="w-5 h-5" />
             </button>
@@ -130,7 +131,7 @@ export const ChatWidget: React.FC = () => {
             {isLoading && (
               <div className="flex items-center gap-2 text-xs text-[#5C6E61]">
                 <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Печатает…</span>
+                <span>{t('chat.11', 'Печатает…')}</span>
               </div>
             )}
 
@@ -144,7 +145,7 @@ export const ChatWidget: React.FC = () => {
                   className="inline-flex items-center gap-1.5 font-semibold text-[#1E7B45] hover:underline"
                 >
                   <MessageCircle className="w-3.5 h-3.5" />
-                  Написать в WhatsApp
+                  {t('chat.12', 'Написать в WhatsApp')}
                 </a>
               </div>
             )}
@@ -156,7 +157,7 @@ export const ChatWidget: React.FC = () => {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Напишите вопрос…"
+              placeholder={t('chat.13', 'Напишите вопрос…')}
               maxLength={1000}
               className="flex-1 text-xs p-2.5 rounded-xl border border-[#D5CDC2] focus:outline-hidden focus:ring-2 focus:ring-[#466352]"
             />
@@ -164,7 +165,7 @@ export const ChatWidget: React.FC = () => {
               type="submit"
               disabled={!input.trim() || isLoading}
               className="p-2.5 rounded-xl bg-[#466352] hover:bg-[#385142] text-white disabled:opacity-40 transition-colors"
-              aria-label="Отправить"
+              aria-label={t('chat.14', 'Отправить')}
             >
               <Send className="w-4 h-4" />
             </button>

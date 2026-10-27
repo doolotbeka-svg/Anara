@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Star, MapPin, CheckCircle, MessageSquarePlus, Quote } from 'lucide-react';
 import { REVIEWS } from '../data/massageData';
 import { ReviewItem } from '../types';
+import { t } from '../content/store';
 
 export const ReviewsSection: React.FC = () => {
   const [selectedTag, setSelectedTag] = useState<string>('all');
@@ -11,17 +12,17 @@ export const ReviewsSection: React.FC = () => {
   // Simple local state for new review form
   const [formData, setFormData] = useState({
     name: '',
-    location: 'Бежецк, ',
+    location: t('reviews.1', 'Бежецк, '),
     text: '',
-    service: 'Массаж спины'
+    service: t('reviews.2', 'Массаж спины')
   });
 
   const tags = [
-    { id: 'all', label: 'Все отзывы' },
-    { id: 'back', label: 'Боль в спине и офисная работа' },
-    { id: 'neck', label: 'Шея и остеохондроз' },
-    { id: 'mom', label: 'Молодые мамы и релакс' },
-    { id: 'edema', label: 'Отеки и легкость' },
+    { id: 'all', label: t('reviews.3', 'Все отзывы') },
+    { id: 'back', label: t('reviews.4', 'Боль в спине и офисная работа') },
+    { id: 'neck', label: t('reviews.5', 'Шея и остеохондроз') },
+    { id: 'mom', label: t('reviews.6', 'Молодые мамы и релакс') },
+    { id: 'edema', label: t('reviews.7', 'Отеки и легкость') },
   ];
 
   const filteredReviews = selectedTag === 'all'
@@ -41,7 +42,7 @@ export const ReviewsSection: React.FC = () => {
     setTimeout(() => {
       setNewReviewSent(false);
       setIsAddingReview(false);
-      setFormData({ name: '', location: 'Бежецк, ', text: '', service: 'Массаж спины' });
+      setFormData({ name: '', location: t('reviews.8', 'Бежецк, '), text: '', service: t('reviews.9', 'Массаж спины') });
     }, 2500);
   };
 
@@ -53,13 +54,13 @@ export const ReviewsSection: React.FC = () => {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
           <div>
             <div className="text-xs font-semibold text-[#466352] uppercase tracking-wider mb-2">
-              Честные истории клиентов
+              {t('reviews.10', 'Честные истории клиентов')}
             </div>
             <h2 className="text-3xl sm:text-4xl font-display font-bold text-[#182B1F] leading-tight">
-              Отзывы жителей Бежецка
+              {t('reviews.11', 'Отзывы жителей Бежецка')}
             </h2>
             <p className="mt-2 text-sm text-[#4E6053] max-w-xl">
-              Реальный опыт жителей города, которые посетили домашний спа-кабинет мастера Анары Муратовой.
+              {t('reviews.12', 'Реальный опыт жителей города, которые посетили домашний спа-кабинет мастера Анары Муратовой.')}
             </p>
           </div>
 
@@ -69,7 +70,7 @@ export const ReviewsSection: React.FC = () => {
               className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-[#375240] bg-white hover:bg-[#F9F7F4] rounded-lg border border-[#D5CDC1] shadow-xs transition-colors"
             >
               <MessageSquarePlus className="w-4 h-4 text-[#466352]" />
-              <span>Оставить свой отзыв</span>
+              <span>{t('reviews.13', 'Оставить свой отзыв')}</span>
             </button>
           </div>
         </div>
@@ -95,46 +96,46 @@ export const ReviewsSection: React.FC = () => {
         {isAddingReview && (
           <div className="mb-10 p-6 rounded-2xl bg-white border border-[#DED6CB] shadow-sm animate-in fade-in slide-in-from-top-4 duration-300">
             <h3 className="text-lg font-display font-bold text-[#182B1F] mb-1">
-              Поделитесь вашим впечатлением от сеанса
+              {t('reviews.14', 'Поделитесь вашим впечатлением от сеанса')}
             </h3>
             <p className="text-xs text-[#5D6F63] mb-4">
-              Ваш отзыв помогает жителям Бежецка сделать правильный выбор
+              {t('reviews.15', 'Ваш отзыв помогает жителям Бежецка сделать правильный выбор')}
             </p>
 
             {newReviewSent ? (
               <div className="p-4 rounded-xl bg-[#EAF4ED] text-[#245232] text-xs font-medium flex items-center gap-2">
                 <CheckCircle className="w-4 h-4 text-[#466352]" />
-                <span>Спасибо! Ваш отзыв отправлен на модерацию и появится на сайте в ближайшее время.</span>
+                <span>{t('reviews.16', 'Спасибо! Ваш отзыв отправлен на модерацию и появится на сайте в ближайшее время.')}</span>
               </div>
             ) : (
               <form onSubmit={handleSubmitReview} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-[11px] font-semibold text-[#48594E] mb-1">Ваше имя</label>
+                    <label className="block text-[11px] font-semibold text-[#48594E] mb-1">{t('reviews.17', 'Ваше имя')}</label>
                     <input
                       type="text"
                       required
-                      placeholder="Мария"
+                      placeholder={t('reviews.18', 'Мария')}
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       className="w-full text-xs p-2.5 rounded-lg border border-[#D5CDC1] focus:outline-hidden focus:ring-2 focus:ring-[#466352]"
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-semibold text-[#48594E] mb-1">Район / Улица в Бежецке</label>
+                    <label className="block text-[11px] font-semibold text-[#48594E] mb-1">{t('reviews.19', 'Район / Улица в Бежецке')}</label>
                     <input
                       type="text"
-                      placeholder="Бежецк, ул. Ленина"
+                      placeholder={t('reviews.20', 'Бежецк, ул. Ленина')}
                       value={formData.location}
                       onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                       className="w-full text-xs p-2.5 rounded-lg border border-[#D5CDC1] focus:outline-hidden focus:ring-2 focus:ring-[#466352]"
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-semibold text-[#48594E] mb-1">Вид массажа</label>
+                    <label className="block text-[11px] font-semibold text-[#48594E] mb-1">{t('reviews.21', 'Вид массажа')}</label>
                     <input
                       type="text"
-                      placeholder="Массаж спины и шеи"
+                      placeholder={t('reviews.22', 'Массаж спины и шеи')}
                       value={formData.service}
                       onChange={(e) => setFormData({ ...formData, service: e.target.value })}
                       className="w-full text-xs p-2.5 rounded-lg border border-[#D5CDC1] focus:outline-hidden focus:ring-2 focus:ring-[#466352]"
@@ -142,11 +143,11 @@ export const ReviewsSection: React.FC = () => {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-[#48594E] mb-1">Ваш отзыв</label>
+                  <label className="block text-[11px] font-semibold text-[#48594E] mb-1">{t('reviews.23', 'Ваш отзыв')}</label>
                   <textarea
                     rows={3}
                     required
-                    placeholder="Расскажите о ваших ощущениях после сеанса..."
+                    placeholder={t('reviews.24', 'Расскажите о ваших ощущениях после сеанса...')}
                     value={formData.text}
                     onChange={(e) => setFormData({ ...formData, text: e.target.value })}
                     className="w-full text-xs p-2.5 rounded-lg border border-[#D5CDC1] focus:outline-hidden focus:ring-2 focus:ring-[#466352]"
@@ -158,13 +159,13 @@ export const ReviewsSection: React.FC = () => {
                     onClick={() => setIsAddingReview(false)}
                     className="px-3 py-1.5 text-xs text-[#5D6F63] hover:text-[#182B1F]"
                   >
-                    Отмена
+                    {t('reviews.25', 'Отмена')}
                   </button>
                   <button
                     type="submit"
                     className="px-4 py-2 text-xs font-semibold text-white bg-[#466352] hover:bg-[#385142] rounded-lg shadow-xs"
                   >
-                    Отправить отзыв
+                    {t('reviews.26', 'Отправить отзыв')}
                   </button>
                 </div>
               </form>
@@ -206,9 +207,9 @@ export const ReviewsSection: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="font-semibold text-xs text-[#182B1F] flex items-center gap-1.5">
-                      <span>{rev.name}, {rev.age} лет</span>
+                      <span>{rev.name}, {rev.age}{' '}{t('reviews.27', 'лет')}</span>
                       {rev.verified && (
-                        <span title="Подтвержденный клиент" className="inline-flex">
+                        <span title={t('reviews.28', 'Подтвержденный клиент')} className="inline-flex">
                           <CheckCircle className="w-3.5 h-3.5 text-[#466352]" />
                         </span>
                       )}
@@ -221,7 +222,7 @@ export const ReviewsSection: React.FC = () => {
                 </div>
 
                 <div className="text-[10px] text-[#788A7D] mt-2 bg-[#F7F4F0] px-2 py-1 rounded">
-                  Услуга: {rev.service}
+                  {t('reviews.29', 'Услуга:')}{' '}{rev.service}
                 </div>
               </div>
 

@@ -1,4 +1,4 @@
-import { MassageService, ReviewItem, FaqItem } from '../types';
+import type { MassageService, ReviewItem, FaqItem } from '../types';
 
 export const MASTER_INFO = {
   name: 'Анара Муратова',
@@ -344,7 +344,7 @@ export const TZ_SPECIFICATION = {
   seoKeywordsBezhetsk: [
     'массаж в бежецке',
     'массаж на дому у мастера бежецк',
-    'массажист бежецк кашинская',
+    'массажист бежецк улица мира',
     'лечебный массаж спины бежецк',
     'массаж шейно-воротниковой зоны бежецк',
     'расслабляющий массаж бежецк',
