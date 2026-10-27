@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { HelpCircle, CheckCircle, Sparkles, ArrowRight, ShieldCheck } from 'lucide-react';
 import { SERVICES } from '../data/massageData';
 import { MassageService } from '../types';
+import { t } from '../content/store';
 
 interface SymptomFinderProps {
   onSelectProgram: (service: MassageService, duration: { minutes: number; price: number }) => void;
@@ -24,47 +25,47 @@ export const SymptomFinder: React.FC<SymptomFinderProps> = ({ onSelectProgram })
     {
       id: 'back',
       iconName: 'spine',
-      title: 'Болит поясница или ноет между лопатками',
-      description: 'Много сидите за компьютером или поднимаете тяжести, к вечеру спина «каменеет»',
+      title: t('symptoms.1', 'Болит поясница или ноет между лопатками'),
+      description: t('symptoms.2', 'Много сидите за компьютером или поднимаете тяжести, к вечеру спина «каменеет»'),
       targetServiceId: 'back-neck',
       recommendedDuration: 45,
-      reason: 'Сфокусируемся на глубокой проработке мышц вдоль позвоночника и снятии миофасциальных триггеров.'
+      reason: t('symptoms.3', 'Сфокусируемся на глубокой проработке мышц вдоль позвоночника и снятии миофасциальных триггеров.')
     },
     {
       id: 'neck',
       iconName: 'head',
-      title: 'Затекает шея, тяжесть в затылке, головные боли',
-      description: 'Долгое сидение в телефоне или за рулем, тянущее ощущение в плечах',
+      title: t('symptoms.4', 'Затекает шея, тяжесть в затылке, головные боли'),
+      description: t('symptoms.5', 'Долгое сидение в телефоне или за рулем, тянущее ощущение в плечах'),
       targetServiceId: 'shvz',
       recommendedDuration: 30,
-      reason: 'Прицельный массаж шейно-воротниковой зоны снимет спазм трапеций и нормализует приток кислорода к мозгу.'
+      reason: t('symptoms.6', 'Прицельный массаж шейно-воротниковой зоны снимет спазм трапеций и нормализует приток кислорода к мозгу.')
     },
     {
       id: 'stress',
       iconName: 'heart',
-      title: 'Хронический стресс, выгорание, бессонница',
-      description: 'Молодые мамы, тревожные мысли, постоянный недосып и мышечная скованность',
+      title: t('symptoms.7', 'Хронический стресс, выгорание, бессонница'),
+      description: t('symptoms.8', 'Молодые мамы, тревожные мысли, постоянный недосып и мышечная скованность'),
       targetServiceId: 'relax-antistress',
       recommendedDuration: 90,
-      reason: 'Плавный седативный спа-массаж с теплыми маслами успокоит нервную систему. После сеанса вы сразу уснете дома.'
+      reason: t('symptoms.9', 'Плавный седативный спа-массаж с теплыми маслами успокоит нервную систему. После сеанса вы сразу уснете дома.')
     },
     {
       id: 'swelling',
       iconName: 'legs',
-      title: 'Отеки, тяжесть в ногах, застой жидкости',
-      description: 'К вечеру обувь давит, чувствуется застой в голенях и бедрах, мало движения',
+      title: t('symptoms.10', 'Отеки, тяжесть в ногах, застой жидкости'),
+      description: t('symptoms.11', 'К вечеру обувь давит, чувствуется застой в голенях и бедрах, мало движения'),
       targetServiceId: 'lymphatic',
       recommendedDuration: 60,
-      reason: 'Мягкий дренажный массаж по ходу лимфотока выведет лишнюю межклеточную жидкость и вернет легкость.'
+      reason: t('symptoms.12', 'Мягкий дренажный массаж по ходу лимфотока выведет лишнюю межклеточную жидкость и вернет легкость.')
     },
     {
       id: 'fatigue',
       iconName: 'body',
-      title: 'Общая скованность во всем теле',
-      description: 'Хочется полного перезапуска и обновления всех мышц от стоп до шеи',
+      title: t('symptoms.13', 'Общая скованность во всем теле'),
+      description: t('symptoms.14', 'Хочется полного перезапуска и обновления всех мышц от стоп до шеи'),
       targetServiceId: 'full-body-classic',
       recommendedDuration: 75,
-      reason: 'Классический массаж всего тела повысит общий тонус, гибкость и снимет накопленные зажимы.'
+      reason: t('symptoms.15', 'Классический массаж всего тела повысит общий тонус, гибкость и снимет накопленные зажимы.')
     }
   ];
 
@@ -79,13 +80,13 @@ export const SymptomFinder: React.FC<SymptomFinderProps> = ({ onSelectProgram })
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto mb-10">
           <div className="text-xs font-semibold text-[#466352] uppercase tracking-wider mb-2">
-            Экспресс-подбор программы
+            {t('symptoms.16', 'Экспресс-подбор программы')}
           </div>
           <h2 className="text-2xl sm:text-3xl font-display font-bold text-[#182B1F]">
-            Что вас беспокоит сейчас сильнее всего?
+            {t('symptoms.17', 'Что вас беспокоит сейчас сильнее всего?')}
           </h2>
           <p className="mt-2 text-xs sm:text-sm text-[#4E6053]">
-            Выберите вашу основную жалобу, чтобы узнать оптимальный вид массажа и длительность для первого визита
+            {t('symptoms.18', 'Выберите вашу основную жалобу, чтобы узнать оптимальный вид массажа и длительность для первого визита')}
           </p>
         </div>
 
@@ -112,7 +113,7 @@ export const SymptomFinder: React.FC<SymptomFinderProps> = ({ onSelectProgram })
                   </div>
                 </div>
                 <div className="mt-3 text-[10px] font-semibold text-[#466352]">
-                  {isSelected ? '✓ Выбрано' : 'Нажмите для расчета'}
+                  {isSelected ? t('symptoms.19', '✓ Выбрано') : t('symptoms.20', 'Нажмите для расчета')}
                 </div>
               </button>
             );
@@ -123,16 +124,16 @@ export const SymptomFinder: React.FC<SymptomFinderProps> = ({ onSelectProgram })
         <div className="bg-white rounded-2xl p-6 sm:p-8 border border-[#E0D8CE] shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-2 max-w-2xl">
             <div className="text-xs font-semibold text-[#466352] uppercase tracking-wider">
-              Рекомендация мастера для вашего случая:
+              {t('symptoms.21', 'Рекомендация мастера для вашего случая:')}
             </div>
             <h3 className="text-xl sm:text-2xl font-display font-bold text-[#182B1F]">
-              {targetService.title} · {durationOption.minutes} минут
+              {targetService.title} · {durationOption.minutes}{' '}{t('symptoms.22', 'минут')}
             </h3>
             <p className="text-xs sm:text-sm text-[#48594E] leading-relaxed">
               {currentSymptom.reason}
             </p>
             <div className="text-xs text-[#5D6F63] pt-1">
-              Стоимость сеанса в домашнем кабинете: <span className="font-bold text-[#182B1F] text-base">{durationOption.price} ₽</span> (чай и расходники включены)
+              {t('symptoms.23', 'Стоимость сеанса в домашнем кабинете:')}{' '}<span className="font-bold text-[#182B1F] text-base">{durationOption.price} ₽</span>{' '}{t('symptoms.24', '(чай и расходники включены)')}
             </div>
           </div>
 
@@ -142,7 +143,7 @@ export const SymptomFinder: React.FC<SymptomFinderProps> = ({ onSelectProgram })
               className="inline-flex items-center justify-center gap-2 px-6 py-3.5 text-xs sm:text-sm font-semibold text-white bg-[#466352] hover:bg-[#385142] active:bg-[#2C4033] rounded-xl shadow-xs transition-colors whitespace-nowrap"
             >
               <Sparkles className="w-4 h-4" />
-              <span>Записаться на этот сеанс</span>
+              <span>{t('symptoms.25', 'Записаться на этот сеанс')}</span>
             </button>
           </div>
         </div>

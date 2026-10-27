@@ -1,34 +1,35 @@
 import React from 'react';
 import { MessageSquareText, MapPin, Sparkles, Coffee, ShieldCheck, Check } from 'lucide-react';
+import { t } from '../content/store';
 
 export const SessionProcess: React.FC = () => {
   const steps = [
     {
       step: '01',
-      title: 'Быстрая запись на удобный час',
-      time: '1–2 минуты',
-      description: 'Вы пишете в WhatsApp/Telegram или звоните. Согласуем удобный день и время приема, уточняем ваши жалобы и отсутствие противопоказаний.',
+      title: t('process.1', 'Быстрая запись на удобный час'),
+      time: t('process.2', '1–2 минуты'),
+      description: t('process.3', 'Вы пишете в WhatsApp/Telegram или звоните. Согласуем удобный день и время приема, уточняем ваши жалобы и отсутствие противопоказаний.'),
       icon: MessageSquareText
     },
     {
       step: '02',
-      title: 'Приезд в уютный домашний кабинет',
-      time: 'Точно к назначенному времени',
-      description: 'Приезжаете по адресу: г. Бежецк, ул. Мира, д. 2/50 (парковка прямо у дома). Мастер встречает вас, провожает в подготовленную теплую комнату со свежим воздухом.',
+      title: t('process.4', 'Приезд в уютный домашний кабинет'),
+      time: t('process.5', 'Точно к назначенному времени'),
+      description: t('process.6', 'Приезжаете по адресу: г. Бежецк, ул. Мира, д. 2/50 (парковка прямо у дома). Мастер встречает вас, провожает в подготовленную теплую комнату со свежим воздухом.'),
       icon: MapPin
     },
     {
       step: '03',
-      title: 'Сеанс массажа и бережная забота',
-      time: '30–90 минут',
-      description: 'Располагаетесь на устойчивом анатомическом столе с подогревом простыни. Прорабатываем спазмированные зоны с контролем комфорта, под расслабляющую музыку.',
+      title: t('process.7', 'Сеанс массажа и бережная забота'),
+      time: t('process.8', '30–90 минут'),
+      description: t('process.9', 'Располагаетесь на устойчивом анатомическом столе с подогревом простыни. Прорабатываем спазмированные зоны с контролем комфорта, под расслабляющую музыку.'),
       icon: Sparkles
     },
     {
       step: '04',
-      title: 'Отдых в чайной зоне без спешки',
-      time: '15 минут покоя',
-      description: 'Никто не торопит освободить место. Вы спокойно одеваетесь, выпиваете чашку свежезаваренного травяного чая с медом и получаете рекомендации по осанке.',
+      title: t('process.10', 'Отдых в чайной зоне без спешки'),
+      time: t('process.11', '15 минут покоя'),
+      description: t('process.12', 'Никто не торопит освободить место. Вы спокойно одеваетесь, выпиваете чашку свежезаваренного травяного чая с медом и получаете рекомендации по осанке.'),
       icon: Coffee
     }
   ];
@@ -40,13 +41,13 @@ export const SessionProcess: React.FC = () => {
         {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto mb-14">
           <div className="text-xs font-semibold text-[#466352] uppercase tracking-wider mb-2">
-            Прозрачность и комфорт
+            {t('process.13', 'Прозрачность и комфорт')}
           </div>
           <h2 className="text-3xl sm:text-4xl font-display font-bold text-[#182B1F]">
-            Как проходит ваш визит в домашний кабинет
+            {t('process.14', 'Как проходит ваш визит в домашний кабинет')}
           </h2>
           <p className="mt-3 text-sm text-[#4E6053] leading-relaxed">
-            Всё организовано так, чтобы вы почувствовали себя желанным гостем, расслабились и забыли о городской суете с первой же минуты.
+            {t('process.15', 'Всё организовано так, чтобы вы почувствовали себя желанным гостем, расслабились и забыли о городской суете с первой же минуты.')}
           </p>
         </div>
 
@@ -93,13 +94,13 @@ export const SessionProcess: React.FC = () => {
             
             <div className="lg:col-span-5 space-y-2">
               <div className="text-xs font-semibold text-[#466352] uppercase tracking-wider">
-                Памятка гостю
+                {t('process.16', 'Памятка гостю')}
               </div>
               <h3 className="text-2xl font-display font-bold text-[#182B1F]">
-                Что нужно взять с собой на сеанс?
+                {t('process.17', 'Что нужно взять с собой на сеанс?')}
               </h3>
               <p className="text-xs text-[#55675A] leading-relaxed">
-                Абсолютно ничего! В кабинете уже приготовлено всё для вашей гигиены и уюта.
+                {t('process.18', 'Абсолютно ничего! В кабинете уже приготовлено всё для вашей гигиены и уюта.')}
               </p>
             </div>
 
@@ -108,30 +109,30 @@ export const SessionProcess: React.FC = () => {
               <div className="bg-white rounded-xl p-4 border border-[#E4DDD3]">
                 <div className="font-semibold text-xs text-[#182B1F] flex items-center gap-1.5 mb-1">
                   <Check className="w-3.5 h-3.5 text-[#466352]" />
-                  <span>Одноразовое белье</span>
+                  <span>{t('process.19', 'Одноразовое белье')}</span>
                 </div>
                 <p className="text-[11px] text-[#5A6D60]">
-                  Индивидуальные простыни, чехлы для подголовника, шапочки и тапочки вскрываются при вас.
+                  {t('process.20', 'Индивидуальные простыни, чехлы для подголовника, шапочки и тапочки вскрываются при вас.')}
                 </p>
               </div>
 
               <div className="bg-white rounded-xl p-4 border border-[#E4DDD3]">
                 <div className="font-semibold text-xs text-[#182B1F] flex items-center gap-1.5 mb-1">
                   <Check className="w-3.5 h-3.5 text-[#466352]" />
-                  <span>Мягкие полотенца</span>
+                  <span>{t('process.21', 'Мягкие полотенца')}</span>
                 </div>
                 <p className="text-[11px] text-[#5A6D60]">
-                  Свежие мягкие полотенца, чтобы укрыться во время массажа и чувствовать себя в тепле.
+                  {t('process.22', 'Свежие мягкие полотенца, чтобы укрыться во время массажа и чувствовать себя в тепле.')}
                 </p>
               </div>
 
               <div className="bg-white rounded-xl p-4 border border-[#E4DDD3]">
                 <div className="font-semibold text-xs text-[#182B1F] flex items-center gap-1.5 mb-1">
                   <Check className="w-3.5 h-3.5 text-[#466352]" />
-                  <span>Травяной сбор с мёдом</span>
+                  <span>{t('process.23', 'Травяной сбор с мёдом')}</span>
                 </div>
                 <p className="text-[11px] text-[#5A6D60]">
-                  Ароматный натуральный чай с мелиссой, мятой и ромашкой ждет вас после каждого сеанса.
+                  {t('process.24', 'Ароматный натуральный чай с мелиссой, мятой и ромашкой ждет вас после каждого сеанса.')}
                 </p>
               </div>
 

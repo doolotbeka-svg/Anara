@@ -1,5 +1,6 @@
 import { GoogleGenAI } from '@google/genai';
-import { MASTER_INFO, SERVICES, FAQ_ITEMS, LOCATION_BEZHETSK } from '../src/data/massageData.js';
+import { resolveData, SiteData } from '../src/content/merge.js';
+import { readContent } from './_lib/content.js';
 
 // Vercel serverless function: keeps GEMINI_API_KEY on the server.
 
@@ -11,7 +12,7 @@ interface ChatMessage {
   text: string;
 }
 
-const buildSystemPrompt = () => {
+const buildSystemPrompt = ({ master: MASTER_INFO, services: SERVICES, faq: FAQ_ITEMS, location: LOCATION_BEZHETSK }: SiteData) => {
   const services = SERVICES.map(
     (s) =>
       `- ${s.title}: ${s.durations.map((d) => `${d.minutes} мин — ${d.price} ₽`).join(', ')}. ${s.description} Показания: ${s.indication}. Курс: ${s.recommendedCourse}.`
@@ -71,12 +72,14 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   try {
+    // Prices and FAQ edited in the admin panel; defaults if storage is unavailable
+    const data = resolveData(await readContent().then((c) => c.data).catch(() => ({})));
     const ai = new GoogleGenAI({ apiKey });
     const response = await ai.models.generateContent({
       model: process.env.GEMINI_MODEL || 'gemini-flash-latest',
       contents: messages.map((m) => ({ role: m.role, parts: [{ text: m.text }] })),
       config: {
-        systemInstruction: buildSystemPrompt(),
+        systemInstruction: buildSystemPrompt(data),
         maxOutputTokens: 600,
         temperature: 0.4,
       },

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Phone, MessageCircle, Send, FileText, Menu, X, Sparkles, MapPin } from 'lucide-react';
 import { MASTER_INFO } from '../data/massageData';
+import { t } from '../content/store';
+import { MasterAvatar } from './MasterAvatar';
 
 interface HeaderProps {
   onOpenBooking: () => void;
@@ -11,12 +13,12 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBooking, onOpenTzModal }) 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navLinks = [
-    { label: 'Услуги и цены', href: '#services' },
-    { label: 'О мастере и кабинете', href: '#about' },
-    { label: 'Как проходит прием', href: '#process' },
-    { label: 'Отзывы', href: '#reviews' },
-    { label: 'Частые вопросы', href: '#faq' },
-    { label: 'Где находится кабинет', href: '#location' },
+    { label: t('header.1', 'Услуги и цены'), href: '#services' },
+    { label: t('header.2', 'О мастере и кабинете'), href: '#about' },
+    { label: t('header.3', 'Как проходит прием'), href: '#process' },
+    { label: t('header.4', 'Отзывы'), href: '#reviews' },
+    { label: t('header.5', 'Частые вопросы'), href: '#faq' },
+    { label: t('header.6', 'Где находится кабинет'), href: '#location' },
   ];
 
   return (
@@ -26,16 +28,17 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBooking, onOpenTzModal }) 
           
           {/* Zone 1: Brand Wordmark (Single text element + master badge) */}
           <a href="#" className="flex items-center gap-2.5 group whitespace-nowrap shrink-0">
-            <span className="w-10 h-10 rounded-full bg-[#466352] text-white flex items-center justify-center font-display font-bold text-base shadow-xs">
-              АМ
-            </span>
+            <MasterAvatar
+              className="w-10 h-10 rounded-full bg-[#466352] text-white font-display font-bold text-base shadow-xs"
+              initials={t('header.7', 'АМ')}
+            />
             <div className="flex flex-col">
               <span className="font-display text-xl sm:text-2xl font-bold tracking-tight text-[#1D3325]">
                 {MASTER_INFO.name}
               </span>
               <span className="text-xs text-[#526457] font-medium tracking-wide flex items-center gap-1">
                 <MapPin className="w-3 h-3 text-[#466352]" />
-                <span>Бежецк, ул. Мира 2/50</span>
+                <span>{t('header.8', 'Бежецк, ул. Мира 2/50')}</span>
               </span>
             </div>
           </a>
@@ -68,7 +71,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBooking, onOpenTzModal }) 
               className="inline-flex items-center gap-1.5 px-3.5 py-2.5 text-xs font-semibold text-white bg-[#466352] hover:bg-[#385142] active:bg-[#2C4033] rounded-lg shadow-sm transition-all whitespace-nowrap shrink-0"
             >
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Записаться</span>
+              <span>{t('header.9', 'Записаться')}</span>
             </button>
           </div>
 
@@ -77,7 +80,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBooking, onOpenTzModal }) 
             <a
               href={`tel:${MASTER_INFO.phone}`}
               className="sm:hidden p-2 text-xs font-bold text-[#1D3325] bg-[#EAE5DC] rounded-md border border-[#D5CDC0]"
-              title="Позвонить"
+              title={t('header.10', 'Позвонить')}
             >
               <Phone className="w-4 h-4 text-[#466352]" />
             </a>
@@ -100,11 +103,11 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBooking, onOpenTzModal }) 
           {/* Master card in mobile menu */}
           <div className="p-3 rounded-xl bg-[#F0EBE1] border border-[#DDD5C7] space-y-1">
             <div className="font-display font-bold text-sm text-[#182B1F]">
-              Анара Муратова · Массаж на дому
+              {t('header.11', 'Анара Муратова · Массаж на дому')}
             </div>
             <div className="text-xs text-[#526457] flex items-center gap-1">
               <MapPin className="w-3.5 h-3.5 text-[#466352]" />
-              <span>Бежецк, ул. Мира, д. 2/50</span>
+              <span>{t('header.12', 'Бежецк, ул. Мира, д. 2/50')}</span>
             </div>
             <div className="text-xs font-bold text-[#1D3325] pt-1">
               <a href={`tel:${MASTER_INFO.phone}`} className="flex items-center gap-1.5 text-[#35523F]">
@@ -137,7 +140,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBooking, onOpenTzModal }) 
                 className="w-full flex items-center justify-center gap-1.5 py-2.5 px-3 text-xs font-medium bg-[#EAE5DC] text-[#2C3B30] rounded-lg border border-[#D5CDC0]"
               >
                 <FileText className="w-4 h-4 text-[#466352]" />
-                <span>Открыть ТЗ</span>
+                <span>{t('header.13', 'Открыть ТЗ')}</span>
               </button>
               <button
                 onClick={() => {
@@ -147,7 +150,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenBooking, onOpenTzModal }) 
                 className="w-full flex items-center justify-center gap-1.5 py-2.5 px-3 text-xs font-semibold bg-[#466352] text-white rounded-lg"
               >
                 <Sparkles className="w-4 h-4" />
-                <span>Записаться</span>
+                <span>{t('header.14', 'Записаться')}</span>
               </button>
             </div>
           </div>

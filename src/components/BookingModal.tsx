@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Sparkles, MessageCircle, Send, Phone, CheckCircle, Calendar, Clock, MapPin } from 'lucide-react';
 import { SERVICES, MASTER_INFO } from '../data/massageData';
 import { MassageService } from '../types';
+import { t } from '../content/store';
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -111,17 +112,17 @@ export const BookingModal: React.FC<BookingModalProps> = ({
               <CheckCircle className="w-8 h-8" />
             </div>
             <h3 className="text-2xl font-display font-bold text-[#182B1F]">
-              Заявка успешно подготовлена!
+              {t('booking.1', 'Заявка успешно подготовлена!')}
             </h3>
             <p className="text-sm text-[#4E6053] max-w-md mx-auto leading-relaxed">
-              Мастер Анара Муратова свяжется с вами в течение 10–15 минут для подтверждения точного времени по адресу: {MASTER_INFO.cabinetAddress}. Если вы открыли WhatsApp — просто отправьте подготовленный текст. Для Telegram текст заявки скопирован — вставьте его в чат.
+              {t('booking.2', 'Мастер Анара Муратова свяжется с вами в течение 10–15 минут для подтверждения точного времени по адресу:')}{' '}{MASTER_INFO.cabinetAddress}{t('booking.3', '. Если вы открыли WhatsApp — просто отправьте подготовленный текст. Для Telegram текст заявки скопирован — вставьте его в чат.')}
             </p>
             <div className="pt-4">
               <button
                 onClick={onClose}
                 className="px-6 py-2.5 text-xs font-semibold text-white bg-[#466352] hover:bg-[#385142] rounded-xl shadow-xs"
               >
-                Вернуться на сайт
+                {t('booking.4', 'Вернуться на сайт')}
               </button>
             </div>
           </div>
@@ -131,14 +132,14 @@ export const BookingModal: React.FC<BookingModalProps> = ({
             {/* Header */}
             <div>
               <div className="text-xs font-semibold text-[#466352] uppercase tracking-wider mb-1">
-                Запись в домашний кабинет (Бежецк)
+                {t('booking.5', 'Запись в домашний кабинет (Бежецк)')}
               </div>
               <h3 className="text-2xl font-display font-bold text-[#182B1F]">
-                Выберите программу и удобное время
+                {t('booking.6', 'Выберите программу и удобное время')}
               </h3>
               <p className="text-xs text-[#5C6E61] mt-1 flex items-center gap-1.5">
                 <MapPin className="w-3.5 h-3.5 text-[#466352]" />
-                <span>Прием по адресу: {MASTER_INFO.cabinetAddress} (удобная парковка)</span>
+                <span>{t('booking.7', 'Прием по адресу:')}{' '}{MASTER_INFO.cabinetAddress}{' '}{t('booking.8', '(удобная парковка)')}</span>
               </p>
             </div>
 
@@ -146,7 +147,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
             <div className="space-y-3 p-4 rounded-2xl bg-[#F8F5F0] border border-[#E6E0D6]">
               <div>
                 <label className="block text-[11px] font-semibold text-[#46574C] mb-1">
-                  Вид массажа:
+                  {t('booking.9', 'Вид массажа:')}
                 </label>
                 <select
                   value={selectedServiceId}
@@ -166,7 +167,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
 
               <div>
                 <label className="block text-[11px] font-semibold text-[#46574C] mb-1">
-                  Длительность и стоимость:
+                  {t('booking.10', 'Длительность и стоимость:')}
                 </label>
                 <div className="flex flex-wrap gap-2">
                   {currentService.durations.map((d, idx) => (
@@ -180,7 +181,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                           : 'bg-white text-[#38483D] border border-[#D5CDC2] hover:bg-[#EDE7DE]'
                       }`}
                     >
-                      {d.minutes} мин · {d.price.toLocaleString('ru-RU')} ₽
+                      {d.minutes}{' '}{t('booking.11', 'мин ·')}{' '}{d.price.toLocaleString('ru-RU')} ₽
                     </button>
                   ))}
                 </div>
@@ -192,11 +193,11 @@ export const BookingModal: React.FC<BookingModalProps> = ({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-[11px] font-semibold text-[#46574C] mb-1">
-                    Ваше имя
+                    {t('booking.12', 'Ваше имя')}
                   </label>
                   <input
                     type="text"
-                    placeholder="Например, Анна"
+                    placeholder={t('booking.13', 'Например, Анна')}
                     value={clientName}
                     onChange={(e) => setClientName(e.target.value)}
                     className="w-full text-xs p-2.5 rounded-xl border border-[#D5CDC2] focus:outline-hidden focus:ring-2 focus:ring-[#466352]"
@@ -204,7 +205,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                 </div>
                 <div>
                   <label className="block text-[11px] font-semibold text-[#46574C] mb-1">
-                    Телефон для связи
+                    {t('booking.14', 'Телефон для связи')}
                   </label>
                   <input
                     type="tel"
@@ -219,7 +220,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                     }`}
                   />
                   {phoneError && (
-                    <p className="mt-1 text-[11px] text-red-600">Укажите номер телефона, чтобы мастер перезвонила</p>
+                    <p className="mt-1 text-[11px] text-red-600">{t('booking.15', 'Укажите номер телефона, чтобы мастер перезвонила')}</p>
                   )}
                 </div>
               </div>
@@ -227,7 +228,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-[11px] font-semibold text-[#46574C] mb-1">
-                    Желаемая дата визита
+                    {t('booking.16', 'Желаемая дата визита')}
                   </label>
                   <input
                     type="date"
@@ -238,30 +239,30 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                 </div>
                 <div>
                   <label className="block text-[11px] font-semibold text-[#46574C] mb-1">
-                    Удобный интервал
+                    {t('booking.17', 'Удобный интервал')}
                   </label>
                   <select
                     value={timePreference}
                     onChange={(e) => setTimePreference(e.target.value)}
                     className="w-full text-xs p-2.5 rounded-xl border border-[#D5CDC2] bg-white focus:outline-hidden focus:ring-2 focus:ring-[#466352]"
                   >
-                    <option value="Утро (09:00 - 12:00)">Утро (09:00 - 12:00)</option>
-                    <option value="День (12:00 - 16:00)">День (12:00 - 16:00)</option>
-                    <option value="Вечер (16:00 - 21:00)">Вечер (16:00 - 21:00)</option>
-                    <option value="В любое удобное мастеру время">В любое удобное время</option>
+                    <option value="Утро (09:00 - 12:00)">{t('booking.18', 'Утро (09:00 - 12:00)')}</option>
+                    <option value="День (12:00 - 16:00)">{t('booking.19', 'День (12:00 - 16:00)')}</option>
+                    <option value="Вечер (16:00 - 21:00)">{t('booking.20', 'Вечер (16:00 - 21:00)')}</option>
+                    <option value="В любое удобное мастеру время">{t('booking.21', 'В любое удобное время')}</option>
                   </select>
                 </div>
               </div>
 
               <div>
                 <label className="block text-[11px] font-semibold text-[#46574C] mb-1">
-                  Что вас беспокоит? (пожелания, жалобы, противопоказания)
+                  {t('booking.22', 'Что вас беспокоит? (пожелания, жалобы, противопоказания)')}
                 </label>
                 <textarea
                   rows={2}
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
-                  placeholder="Например: болит поясница, затекла шея, хочется снять напряжение..."
+                  placeholder={t('booking.23', 'Например: болит поясница, затекла шея, хочется снять напряжение...')}
                   className="w-full text-xs p-2.5 rounded-xl border border-[#D5CDC2] focus:outline-hidden focus:ring-2 focus:ring-[#466352]"
                 />
               </div>
@@ -270,7 +271,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
             {/* Quick Action Submission via Messenger */}
             <div className="pt-2 border-t border-[#ECE5DB] space-y-3">
               <div className="text-xs font-semibold text-[#46574C] text-center">
-                Выберите удобный способ подтверждения записи:
+                {t('booking.24', 'Выберите удобный способ подтверждения записи:')}
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -280,7 +281,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                   className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#25D366] hover:bg-[#20BC5A] text-white text-xs font-semibold shadow-xs transition-colors"
                 >
                   <MessageCircle className="w-4 h-4" />
-                  <span>Отправить в WhatsApp</span>
+                  <span>{t('booking.25', 'Отправить в WhatsApp')}</span>
                 </button>
 
                 <button
@@ -289,7 +290,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                   className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#2AABEE] hover:bg-[#2297D4] text-white text-xs font-semibold shadow-xs transition-colors"
                 >
                   <Send className="w-4 h-4" />
-                  <span>Отправить в Telegram</span>
+                  <span>{t('booking.26', 'Отправить в Telegram')}</span>
                 </button>
               </div>
 
@@ -299,7 +300,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                   onClick={handlePhoneSubmit}
                   className="text-xs text-[#526457] hover:text-[#182B1F] underline transition-colors"
                 >
-                  или просто перезвоните мне по номеру {phone || '...'}
+                  {t('booking.27', 'или просто перезвоните мне по номеру')}{' '}{phone || '...'}
                 </button>
               </div>
             </div>
