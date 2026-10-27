@@ -4,7 +4,7 @@ import { json, requireAdmin } from '../_lib/http.js';
 const MAX_BODY_BYTES = 2 * 1024 * 1024;
 
 export async function GET(request: Request): Promise<Response> {
-  const denied = await requireAdmin(request);
+  const denied = requireAdmin(request);
   if (denied) return denied;
   try {
     return json(await readContent());
@@ -15,7 +15,7 @@ export async function GET(request: Request): Promise<Response> {
 }
 
 export async function PUT(request: Request): Promise<Response> {
-  const denied = await requireAdmin(request);
+  const denied = requireAdmin(request);
   if (denied) return denied;
 
   const text = await request.text();

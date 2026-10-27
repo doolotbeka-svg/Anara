@@ -5,7 +5,7 @@ import { json, requireAdmin } from '../_lib/http.js';
 const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
 
 export async function POST(request: Request): Promise<Response> {
-  const denied = await requireAdmin(request);
+  const denied = requireAdmin(request);
   if (denied) return denied;
 
   const contentType = (request.headers.get('content-type') ?? '').split(';')[0].trim();
